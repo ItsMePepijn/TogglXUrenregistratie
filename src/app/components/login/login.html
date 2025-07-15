@@ -1,0 +1,17 @@
+<h2>Please enter your credentials</h2>
+
+<form [formGroup]="form" (ngSubmit)="login()">
+  <div>
+    <label for="username">Email:</label>
+    <input type="email" name="username" [formControl]="form.controls.email" />
+  </div>
+  <div>
+    <label for="password">Password:</label>
+    <input
+      type="password"
+      name="password"
+      [formControl]="form.controls.password"
+    />
+  </div>
+  <button type="submit">Login</button>
+</form>
