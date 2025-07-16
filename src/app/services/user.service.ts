@@ -27,10 +27,10 @@ export class UserService {
           this.saveUserToStorage(user);
         }
       }),
+      map(() => ({ success: true as const })),
       catchError((error) => {
         return of({ error: error.error, success: false });
-      }),
-      map(() => ({ success: true }))
+      })
     );
   }
 

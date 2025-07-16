@@ -9,10 +9,31 @@ import {
 import { UserService } from '../../services/user.service';
 import { Router } from '@angular/router';
 import { BehaviorSubject, take } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { FluidModule } from 'primeng/fluid';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputTextModule } from 'primeng/inputtext';
+import { MessageModule } from 'primeng/message';
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule, ReactiveFormsModule],
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    ButtonModule,
+    FloatLabelModule,
+    InputTextModule,
+    IconFieldModule,
+    InputIconModule,
+    CardModule,
+    FluidModule,
+    AsyncPipe,
+    MessageModule,
+  ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
@@ -48,6 +69,7 @@ export class Login {
       .login(data.email, data.password)
       .pipe(take(1))
       .subscribe((result) => {
+        console.log(result);
         if (result.success) {
           this.router.navigate(['']);
         } else {

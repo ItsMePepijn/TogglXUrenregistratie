@@ -1,21 +1,42 @@
 <h2>Please enter your credentials</h2>
 
 <form [formGroup]="loginForm" (ngSubmit)="login()">
-  <div>
-    <label for="username">Email:</label>
-    <input
-      type="email"
-      name="username"
-      [formControl]="loginForm.controls.email"
-    />
-  </div>
-  <div>
-    <label for="password">Password:</label>
-    <input
-      type="password"
-      name="password"
-      [formControl]="loginForm.controls.password"
-    />
-  </div>
-  <button type="submit">Login</button>
+  <p-floatlabel variant="on">
+    <p-iconfield>
+      <p-inputicon styleClass="pi pi-envelope" />
+      <input
+        pInputText
+        id="email"
+        [formControl]="loginForm.controls.email"
+        type="email"
+      />
+      <label for="email">Email</label>
+    </p-iconfield>
+  </p-floatlabel>
+
+  <p-floatlabel variant="on">
+    <p-iconfield>
+      <p-inputicon styleClass="pi pi-lock" />
+      <input
+        pInputText
+        id="password"
+        [formControl]="loginForm.controls.password"
+        type="password"
+      />
+      <label for="password">Password</label>
+    </p-iconfield>
+  </p-floatlabel>
+
+  @if (loginError$ | async; as error) {
+  <p-message severity="error" [text]="error" />
+  } @if (isLoading$ | async) {
+  <p-button disabled fluid><i class="pi pi-spin pi-spinner"></i></p-button>
+  } @else {
+  <p-button
+    type="submit"
+    label="Sign in"
+    [disabled]="loginForm.invalid"
+    fluid
+  />
+  }
 </form>
