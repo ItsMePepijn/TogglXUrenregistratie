@@ -1,0 +1,16 @@
+<header>
+  <div>
+    <h1>TogglXUrenregistratie</h1>
+  </div>
+
+  @if(userService.isLoggedIn$ | async) {
+  <div>
+    <p-menu #menu [model]="items" [popup]="true" />
+    <p-button
+      (click)="menu.toggle($event)"
+      icon="pi pi-ellipsis-v"
+      size="small"
+    />
+  </div>
+  }
+</header>
