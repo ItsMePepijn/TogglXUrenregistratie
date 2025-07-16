@@ -8,6 +8,7 @@ import {
 } from '@angular/forms';
 import { UserService } from '../../services/user.service';
 import { Router } from '@angular/router';
+import { BehaviorSubject, take } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -16,10 +17,16 @@ import { Router } from '@angular/router';
   styleUrl: './login.scss',
 })
 export class Login {
-  protected readonly form = new FormGroup({
+  protected readonly loginForm = new FormGroup({
     email: new FormControl<string | null>(null, [Validators.required]),
     password: new FormControl<string | null>(null, [Validators.required]),
   });
+
+  private readonly _loginError$ = new BehaviorSubject<string | null>(null);
+  protected readonly loginError$ = this._loginError$.asObservable();
+
+  private readonly _isLoading$ = new BehaviorSubject<boolean>(false);
+  protected readonly isLoading$ = this._isLoading$.asObservable();
 
   constructor(
     private readonly userService: UserService,
@@ -27,15 +34,26 @@ export class Login {
   ) {}
 
   protected login() {
-    if (!this.form.valid) {
+    this._loginError$.next(null);
+
+    if (!this.loginForm.valid) {
       return;
     }
+
+    const data = this.loginForm.value;
+    if (!data.email || !data.password) return;
+
+    this._isLoading$.next(true);
     this.userService
-      .login(this.form.value.email!, this.form.value.password!)
-      .subscribe((success) => {
-        if (success) {
+      .login(data.email, data.password)
+      .pipe(take(1))
+      .subscribe((result) => {
+        if (result.success) {
           this.router.navigate(['']);
+        } else {
+          this._loginError$.next(result.error);
         }
+        this._isLoading$.next(false);
       });
   }
 }

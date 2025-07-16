@@ -1,13 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  BehaviorSubject,
-  catchError,
-  map,
-  Observable,
-  of,
-  take,
-  tap,
-} from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, of, tap } from 'rxjs';
 import { TogglUser } from '../models/toggl-user.model';
 import { TogglService } from './toggl.service';
 
@@ -24,19 +16,21 @@ export class UserService {
 
   constructor(private readonly togglService: TogglService) {}
 
-  public login(email: string, password: string): Observable<boolean> {
+  public login(
+    email: string,
+    password: string
+  ): Observable<{ error: string; success: false } | { success: true }> {
     return this.togglService.getUserWithCredentials(email, password).pipe(
-      catchError((error) => {
-        console.error('Login failed:', error.error);
-        return of(null);
-      }),
       tap((user) => {
         this._user$.next(user);
         if (user) {
           this.saveUserToStorage(user);
         }
       }),
-      map((user) => !!user)
+      catchError((error) => {
+        return of({ error: error.error, success: false });
+      }),
+      map(() => ({ success: true }))
     );
   }
 
@@ -71,7 +65,7 @@ export class UserService {
   }
 
   private saveUserToStorage(user: TogglUser): void {
-    chrome.storage.local.set({ togglUser: user }, () => {
+    chrome.storage.local.set({ [USER_STORAGE_KEY]: user }, () => {
       if (chrome.runtime.lastError) {
         console.error(
           'Error saving user to storage:',

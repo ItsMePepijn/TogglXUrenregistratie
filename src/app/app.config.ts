@@ -10,9 +10,9 @@ import { provideHttpClient } from '@angular/common/http';
 import { routes } from './app.routes';
 import { UserService } from './services/user.service';
 
-function initializeApp() {
+async function initializeApp() {
   const userService = inject(UserService);
-  return userService.loadUserFromStorage();
+  await userService.loadUserFromStorage();
 }
 
 export const appConfig: ApplicationConfig = {
