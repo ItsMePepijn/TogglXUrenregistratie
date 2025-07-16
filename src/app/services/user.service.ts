@@ -1,5 +1,13 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, map, Observable, of, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  map,
+  Observable,
+  of,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { TogglUser } from '../models/toggl-user.model';
 import { TogglService } from './toggl.service';
 
@@ -19,7 +27,7 @@ export class UserService {
   public login(
     email: string,
     password: string
-  ): Observable<{ error: string; success: false } | { success: true }> {
+  ): Observable<{ success: true } | { error: string; success: false }> {
     return this.togglService.getUserWithCredentials(email, password).pipe(
       tap((user) => {
         this._user$.next(user);
@@ -29,7 +37,10 @@ export class UserService {
       }),
       map(() => ({ success: true as const })),
       catchError((error) => {
-        return of({ error: error.error, success: false });
+        return of({
+          error: error.error || 'Unknown error occurred',
+          success: false,
+        });
       })
     );
   }
@@ -62,6 +73,43 @@ export class UserService {
         resolve();
       });
     });
+  }
+
+  ///
+  /// TODO: Return type
+  ///
+  public getMyTimeEntriesForDate(
+    date: Date
+  ): Observable<
+    | { success: true; entries: any[]; error: null }
+    | { success: false; entries: null; error: string }
+  > {
+    return this.user$.pipe(
+      switchMap((user) => {
+        const token = user?.api_token;
+        if (!token) {
+          return of({
+            success: false as const,
+            entries: null,
+            error: 'Not logged in',
+          });
+        }
+        return this.togglService.getTimeEntriesForDate(date, token).pipe(
+          map((entries) => ({
+            success: true as const,
+            entries: entries || [],
+            error: null,
+          })),
+          catchError((error) => {
+            return of({
+              success: false as const,
+              entries: null,
+              error: error.error || 'Unknown error occurred',
+            });
+          })
+        );
+      })
+    );
   }
 
   private saveUserToStorage(user: TogglUser): void {

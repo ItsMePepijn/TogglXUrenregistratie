@@ -5,6 +5,21 @@ chrome.runtime.onMessage.addListener(function (request, _, sendResponse) {
   return true;
 });
 
+document.addEventListener("click", () => {
+  publishSelectedDate();
+});
+
+function publishSelectedDate() {
+  const selectedDate = getSelectedDate();
+  console.log("Publishing selected date:", selectedDate);
+  if (selectedDate) {
+    chrome.runtime.sendMessage({
+      type: "selectedDateChanged",
+      selectedDate,
+    });
+  }
+}
+
 function getSelectedDate() {
   const form = document.getElementById("createTimeRegistrationForm");
   if (!form) {
@@ -16,5 +31,5 @@ function getSelectedDate() {
     return null;
   }
 
-  return dateInput.value;
+  return dateInput.value.split(" ")[0];
 }

@@ -1,1 +1,6 @@
-<p>{{ contentService.selectedDate$ | async }}</p>
+<p>{{ contentService.selectedDate$ | async | date }}</p>
+@if(items$ | async; as items){ @for (item of items; track $index) {
+<p>
+  <b>{{ item.description }}</b> : <span>{{ item.duration }} secs</span>
+</p>
+} }
