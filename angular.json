@@ -26,8 +26,7 @@
                 "input": "public"
               },
               "src/manifest.json",
-              "src/content.js",
-              "src/background.js"
+              "src/content.js"
             ],
             "styles": ["src/styles.scss"]
           },
