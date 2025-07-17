@@ -26,6 +26,6 @@ export class Header {
 
   constructor(
     protected readonly userService: UserService,
-    private readonly route: Router
+    private readonly route: Router,
   ) {}
 }

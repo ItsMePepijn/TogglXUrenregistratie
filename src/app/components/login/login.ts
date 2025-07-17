@@ -51,7 +51,7 @@ export class Login {
 
   constructor(
     private readonly userService: UserService,
-    private readonly router: Router
+    private readonly router: Router,
   ) {}
 
   protected login() {

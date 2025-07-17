@@ -1,6 +1,15 @@
-<p>{{ contentService.selectedDate$ | async | date }}</p>
-@if(items$ | async; as items){ @for (item of items; track $index) {
-<p>
-  <b>{{ item.description }}</b> : <span>{{ item.duration }} secs</span>
-</p>
-} }
+<p>{{ contentService.selectedDate$ | async | date: "fullDate" }}</p>
+
+<div class="item-wrapper">
+  @if (isLoading$ | async) {
+    <p>Loading...</p>
+  } @else {
+    @if (items$ | async; as items) {
+      @for (item of items; track $index) {
+        <div>
+          <b>{{ item.description }}</b> : <span>{{ item.duration }} secs</span>
+        </div>
+      }
+    }
+  }
+</div>

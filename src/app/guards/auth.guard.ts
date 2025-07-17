@@ -5,7 +5,7 @@ import { UserService } from '../services/user.service';
 
 export const createAuthGuard = (
   commands: any[],
-  navigationExtras?: UrlCreationOptions
+  navigationExtras?: UrlCreationOptions,
 ): CanActivateFn => {
   return () => {
     const userService = inject(UserService);
@@ -19,7 +19,7 @@ export const createAuthGuard = (
         }
 
         return router.createUrlTree(commands, navigationExtras);
-      })
+      }),
     );
   };
 };

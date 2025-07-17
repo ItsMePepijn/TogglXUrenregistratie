@@ -1,4 +1,4 @@
-export interface TogglUser {
+export interface User {
   '2fa_enabled': boolean;
   api_token: string;
   at: string;

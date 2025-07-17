@@ -1,0 +1,9 @@
+.item-wrapper {
+  max-height: 380px;
+  min-width: 400px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}

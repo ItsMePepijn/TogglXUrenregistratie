@@ -14,71 +14,53 @@ export class ContentService {
     this.initSelectedDateListener();
   }
 
-  ///
-  /// TODO: opschonen
-  ///
   private async initializeSelectedDate(): Promise<void> {
     try {
-      const tabs = await chrome.tabs.query({
-        active: true,
-        currentWindow: true,
-      });
-
-      if (tabs.length === 0) {
-        console.error('No active tab found');
+      const activeTabId = await this.getActiveTabId();
+      if (activeTabId === null) {
+        console.warn('No active tab found to get selected date.');
         return;
       }
 
-      const { id } = tabs[0];
-      if (!id) {
-        console.error('Tab ID is undefined');
-        return;
-      }
-
-      const response = await chrome.tabs.sendMessage(id, {
+      const response = await chrome.tabs.sendMessage(activeTabId, {
         type: 'getSelectedDate',
       });
 
-      const date = response.selectedDate
-        ? new Date(reverseDate(response.selectedDate))
-        : null;
-
+      const date = this.parsePossibleDate(response.selectedDate);
       this._selectedDate.next(date);
     } catch (error) {
       console.error('Error getting selected date from content script:', error);
     }
   }
 
-  ///
-  /// TODO: opschonen
-  ///
   private async initSelectedDateListener(): Promise<void> {
     try {
-      const tabs = await chrome.tabs.query({
-        active: true,
-        currentWindow: true,
-      });
-
-      if (tabs.length === 0) {
-        console.error('No active tab found');
-        return;
-      }
-
-      const { id } = tabs[0];
-      if (!id) {
-        console.error('Tab ID is undefined');
-        return;
-      }
       chrome.runtime.onMessage.addListener((message: any) => {
         if (message.type === 'selectedDateChanged') {
-          const date = message.selectedDate
-            ? new Date(reverseDate(message.selectedDate))
-            : null;
+          const date = this.parsePossibleDate(message.selectedDate);
           this._selectedDate.next(date);
         }
       });
     } catch (error) {
       console.error('Error initializing selected date listener:', error);
     }
+  }
+
+  private parsePossibleDate(dateString: any): Date | null {
+    return dateString ? new Date(reverseDate(dateString)) : null;
+  }
+
+  private async getActiveTabId(): Promise<number | null> {
+    const tabs = await chrome.tabs.query({
+      active: true,
+      currentWindow: true,
+    });
+
+    if (tabs.length === 0) {
+      return null;
+    }
+
+    const { id } = tabs[0];
+    return id ?? null;
   }
 }

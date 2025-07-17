@@ -8,8 +8,9 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
-import { TogglUser } from '../models/toggl-user.model';
+import { User } from '../models/toggl/toggl-user.model';
 import { TogglService } from './toggl.service';
+import { TimeEntry } from '../models/toggl/time-entry.model';
 
 const USER_STORAGE_KEY = 'togglUser';
 
@@ -17,7 +18,7 @@ const USER_STORAGE_KEY = 'togglUser';
   providedIn: 'root',
 })
 export class UserService {
-  private readonly _user$ = new BehaviorSubject<TogglUser | null>(null);
+  private readonly _user$ = new BehaviorSubject<User | null>(null);
 
   public readonly user$ = this._user$.asObservable();
   public readonly isLoggedIn$ = this._user$.pipe(map((user) => user !== null));
@@ -26,7 +27,7 @@ export class UserService {
 
   public login(
     email: string,
-    password: string
+    password: string,
   ): Observable<{ success: true } | { error: string; success: false }> {
     return this.togglService.getUserWithCredentials(email, password).pipe(
       tap((user) => {
@@ -41,7 +42,7 @@ export class UserService {
           error: error.error || 'Unknown error occurred',
           success: false,
         });
-      })
+      }),
     );
   }
 
@@ -51,7 +52,7 @@ export class UserService {
       if (chrome.runtime.lastError) {
         console.error(
           'Error removing user from storage:',
-          chrome.runtime.lastError
+          chrome.runtime.lastError,
         );
       }
     });
@@ -63,7 +64,7 @@ export class UserService {
         if (chrome.runtime.lastError) {
           console.error(
             'Error loading user from storage:',
-            chrome.runtime.lastError
+            chrome.runtime.lastError,
           );
           this._user$.next(null);
         } else {
@@ -75,13 +76,10 @@ export class UserService {
     });
   }
 
-  ///
-  /// TODO: Return type
-  ///
   public getMyTimeEntriesForDate(
-    date: Date
+    date: Date,
   ): Observable<
-    | { success: true; entries: any[]; error: null }
+    | { success: true; entries: TimeEntry[]; error: null }
     | { success: false; entries: null; error: string }
   > {
     return this.user$.pipe(
@@ -106,18 +104,18 @@ export class UserService {
               entries: null,
               error: error.error || 'Unknown error occurred',
             });
-          })
+          }),
         );
-      })
+      }),
     );
   }
 
-  private saveUserToStorage(user: TogglUser): void {
+  private saveUserToStorage(user: User): void {
     chrome.storage.local.set({ [USER_STORAGE_KEY]: user }, () => {
       if (chrome.runtime.lastError) {
         console.error(
           'Error saving user to storage:',
-          chrome.runtime.lastError
+          chrome.runtime.lastError,
         );
       }
     });
