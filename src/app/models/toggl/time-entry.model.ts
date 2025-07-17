@@ -17,4 +17,10 @@ export interface TimeEntry {
   uid: number;
   wid: number;
   pid: number;
+  project_name?: string;
+  project_color?: string;
+  project_active?: boolean;
+  project_billable?: boolean;
+  user_name?: string;
+  user_avatar_url?: string;
 }

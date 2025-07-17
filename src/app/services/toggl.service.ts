@@ -31,15 +31,18 @@ export class TogglService {
     const endDate = new Date(date);
     endDate.setDate(date.getDate() + 1);
 
-    return this.http.get<TimeEntry[]>(`${this.apiUrl}/me/time_entries`, {
-      headers: {
-        Authorization: this.getAuthHeaderFromCredentials(token),
+    return this.http.get<TimeEntry[]>(
+      `${this.apiUrl}/me/time_entries?meta=true`,
+      {
+        headers: {
+          Authorization: this.getAuthHeaderFromCredentials(token),
+        },
+        params: {
+          start_date: getFormattedDate(date),
+          end_date: getFormattedDate(endDate),
+        },
       },
-      params: {
-        start_date: getFormattedDate(date),
-        end_date: getFormattedDate(endDate),
-      },
-    });
+    );
   }
 
   private getAuthHeaderFromCredentials(
