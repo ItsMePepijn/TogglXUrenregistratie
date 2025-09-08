@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { reverseDate } from '../helpers/date.helper';
+import { TimeEntryGroup } from '../models/time-entry-group.model';
+import { parseDescription } from '../helpers/description-parser.helper';
+import { TimespanPipe } from '../pipes/timespan.pipe';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +12,9 @@ export class ContentService {
   private readonly _selectedDate = new BehaviorSubject<Date | null>(null);
   public readonly selectedDate$ = this._selectedDate.asObservable();
 
-  constructor() {
+  private readonly descriptionRegex = /(\d+) - (.*)/;
+
+  constructor(private readonly timespanPipe: TimespanPipe) {
     this.initializeSelectedDate();
     this.initSelectedDateListener();
   }
@@ -33,7 +38,7 @@ export class ContentService {
     }
   }
 
-  private async initSelectedDateListener(): Promise<void> {
+  private initSelectedDateListener(): void {
     try {
       chrome.runtime.onMessage.addListener((message: any) => {
         if (message.type === 'selectedDateChanged') {
@@ -62,5 +67,43 @@ export class ContentService {
 
     const { id } = tabs[0];
     return id ?? null;
+  }
+
+  public async fillTimeEntryGroup(
+    timeEntryGroup: TimeEntryGroup,
+  ): Promise<void> {
+    try {
+      const activeTabId = await this.getActiveTabId();
+      if (activeTabId === null) {
+        console.warn('No active tab found to fill time entry.');
+        return;
+      }
+
+      const parsedDescription = parseDescription(
+        timeEntryGroup.description,
+        this.descriptionRegex,
+      );
+
+      if (!parsedDescription?.pbiNumber || !parsedDescription?.description) {
+        console.warn('Parsed description is incomplete:', parsedDescription);
+        return;
+      }
+
+      const payload = {
+        pbiNumber: parsedDescription.pbiNumber,
+        description: parsedDescription.description,
+        time: this.timespanPipe.transform(
+          timeEntryGroup.totalDuration,
+          'HH:mm',
+        ),
+      };
+
+      chrome.tabs.sendMessage(activeTabId, {
+        type: 'fillTimeEntry',
+        payload,
+      });
+    } catch (error) {
+      console.error('Error filling time entry group in content script:', error);
+    }
   }
 }

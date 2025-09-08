@@ -1,7 +1,7 @@
 <div class="sub-header">
   <p>{{ contentService.selectedDate$ | async | date: "fullDate" }}</p>
   @if (totalDuration$ | async; as totalDuration) {
-    <p-badge [value]="totalDuration | timespan" />
+    <p-badge [value]="totalDuration | timespan: 'HH:mm:ss'" />
   }
 </div>
 
@@ -9,43 +9,10 @@
   @if (isLoading$ | async) {
     <p>Loading...</p>
   } @else {
-    @if (items$ | async; as items) {
+    @if (timeEntryGroups$ | async; as groups) {
       <p-accordion [multiple]="true">
-        @for (item of items; track $index) {
-          <p-accordion-panel [value]="$index">
-            <p-accordion-header>
-              <ng-template #toggleicon let-active="active">
-                <div class="item-icon">
-                  <p-badge [value]="item.totalDuration | timespan" />
-                  @if (active) {
-                    <i class="pi pi-chevron-up"></i>
-                  } @else {
-                    <i class="pi pi-chevron-down"></i>
-                  }
-                </div>
-              </ng-template>
-
-              <div class="item-description">
-                {{ item.description }}
-                @if (item.projectName) {
-                  <p-badge
-                    [value]="item.projectName"
-                    badgeSize="small"
-                    [style.backgroundColor]="item.projectColor"
-                  />
-                }
-              </div>
-            </p-accordion-header>
-            <p-accordion-content>
-              <ul>
-                @for (entry of item.entries; track entry.id) {
-                  <li>
-                    {{ entry.duration | timespan }}
-                  </li>
-                }
-              </ul>
-            </p-accordion-content>
-          </p-accordion-panel>
+        @for (group of groups; track $index) {
+          <app-time-entry-group [group]="group" [index]="$index" />
         }
       </p-accordion>
     }

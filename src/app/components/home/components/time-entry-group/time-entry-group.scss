@@ -1,0 +1,24 @@
+p-accordion-header {
+  padding: 0.5rem;
+}
+
+::ng-deep p-accordion-content .p-accordioncontent-content {
+  padding: 0.5rem;
+  padding-top: 0;
+
+  & * {
+    margin: 0;
+  }
+}
+
+.item-icon {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.item-description {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

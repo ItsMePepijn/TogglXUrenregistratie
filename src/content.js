@@ -1,6 +1,12 @@
-chrome.runtime.onMessage.addListener(function (request, _, sendResponse) {
+const FORM_SELECTION_ID = "createTimeRegistrationForm";
+const BASE_URL = window.location.origin;
+
+chrome.runtime.onMessage.addListener(async function (request, _, sendResponse) {
   if (request.type === "getSelectedDate")
     sendResponse({ selectedDate: getSelectedDate() });
+
+  if (request.type === "fillTimeEntry")
+    await fillTimeEntryGroup(request.payload);
 
   return true;
 });
@@ -21,7 +27,7 @@ function publishSelectedDate() {
 }
 
 function getSelectedDate() {
-  const form = document.getElementById("createTimeRegistrationForm");
+  const form = document.getElementById(FORM_SELECTION_ID);
   if (!form) {
     return null;
   }
@@ -32,4 +38,65 @@ function getSelectedDate() {
   }
 
   return dateInput.value.split(" ")[0];
+}
+
+async function fillTimeEntryGroup(timeEntryGroup) {
+  if (
+    !timeEntryGroup?.pbiNumber ||
+    !timeEntryGroup?.description ||
+    !timeEntryGroup?.time
+  ) {
+    console.warn("Incomplete time entry group:", timeEntryGroup);
+    return;
+  }
+
+  const form = document.getElementById(FORM_SELECTION_ID);
+  if (!form) {
+    console.warn("Form not found");
+    return;
+  }
+
+  const dateInput = form.querySelector("#Date");
+  if (!dateInput) {
+    console.warn("Date input not found");
+    return;
+  }
+  const date = dateInput.value;
+
+  const createFormDiv = form.querySelector("#create-form");
+  if (!createFormDiv) {
+    console.warn("Create form div not found");
+    return;
+  }
+
+  const resp = await fetch(
+    `${BASE_URL}/Client/ListActive?page=1&SearchTerm=%23${timeEntryGroup.pbiNumber}`,
+  );
+  const body = await resp.json();
+  const firstItem = body[0].children[0];
+
+  const verifyDescriptionRegex = new RegExp(`#${timeEntryGroup.pbiNumber} -`);
+  if (!firstItem || !verifyDescriptionRegex.test(firstItem.text)) {
+    console.warn("Description verification failed");
+    return;
+  }
+
+  const postData = {
+    ProductBacklogItemId: firstItem.id.replace("#", ""),
+    ViewModelName: "CreateTimeRegistrationViewModel",
+    Date: date,
+    Description: timeEntryGroup.description,
+    Duration: timeEntryGroup.time,
+  };
+
+  const postResp = await fetch(
+    `${BASE_URL}/TimeRegistration/PostProductBacklogItemModel`,
+    {
+      method: "POST",
+      body: new URLSearchParams(postData),
+    },
+  );
+
+  const newFormContent = await postResp.text();
+  createFormDiv.innerHTML = newFormContent;
 }

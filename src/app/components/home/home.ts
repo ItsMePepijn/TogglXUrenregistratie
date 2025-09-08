@@ -16,17 +16,13 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TimeEntry } from '../../models/toggl/time-entry.model';
 import { TimespanPipe } from '../../pipes/timespan.pipe';
-import { PanelMenu } from 'primeng/panelmenu';
-import { Accordion, AccordionModule } from 'primeng/accordion';
+import { AccordionModule } from 'primeng/accordion';
 import { BadgeModule } from 'primeng/badge';
-
-interface TimeEntryGroup {
-  description: string | null;
-  projectName?: string;
-  projectColor?: string;
-  totalDuration: number;
-  entries: TimeEntry[];
-}
+import {
+  TimeEntryGroup,
+  TimeEntryGroupImpl,
+} from '../../models/time-entry-group.model';
+import { TimeEntryGroupComponent } from './components/time-entry-group/time-entry-group';
 
 @Component({
   selector: 'app-home',
@@ -37,16 +33,21 @@ interface TimeEntryGroup {
     TimespanPipe,
     AccordionModule,
     BadgeModule,
+    TimeEntryGroupComponent,
   ],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
 export class Home implements OnInit {
-  private readonly _items$ = new BehaviorSubject<TimeEntry[] | null>(null);
-  protected readonly items$: Observable<TimeEntryGroup[] | null> =
-    this._items$.pipe(map(this.mapItemsToGroups));
+  private readonly _timeEntries$ = new BehaviorSubject<TimeEntry[] | null>(
+    null,
+  );
+
+  protected readonly timeEntryGroups$: Observable<TimeEntryGroup[] | null> =
+    this._timeEntries$.pipe(map(this.mapItemsToGroups));
+
   protected readonly totalDuration$: Observable<number | null> =
-    this._items$.pipe(
+    this._timeEntries$.pipe(
       map((items) => {
         if (!items) {
           return null;
@@ -84,9 +85,9 @@ export class Home implements OnInit {
       .subscribe((result) => {
         this.isLoading$.next(false);
         if (result.success) {
-          this._items$.next(result.entries);
+          this._timeEntries$.next(result.entries);
         } else {
-          this._items$.next(null);
+          this._timeEntries$.next(null);
           if (result.error) {
             this.error$.next(result.error);
           }
@@ -115,16 +116,16 @@ export class Home implements OnInit {
       );
 
       if (existingGroup) {
-        existingGroup.totalDuration += entry.duration;
         existingGroup.entries.push(entry);
       } else {
-        grouped.push({
-          description: entry.description,
-          totalDuration: entry.duration,
-          projectName: entry.project_name,
-          projectColor: entry.project_color,
-          entries: [entry],
-        });
+        grouped.push(
+          new TimeEntryGroupImpl(
+            entry.description,
+            [entry],
+            entry.project_name,
+            entry.project_color,
+          ),
+        );
       }
     });
     return grouped;

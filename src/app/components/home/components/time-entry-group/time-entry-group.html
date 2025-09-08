@@ -1,0 +1,39 @@
+@if (group$ | async; as group) {
+  <p-accordion-panel [value]="index">
+    <p-accordion-header>
+      <ng-template #toggleicon let-active="active">
+        <div class="item-icon">
+          <p-badge
+            [value]="group.totalDuration | timespan: 'HH:mm:ss'"
+            (click)="contentService.fillTimeEntryGroup(group)"
+          />
+          @if (active) {
+            <i class="pi pi-chevron-up"></i>
+          } @else {
+            <i class="pi pi-chevron-down"></i>
+          }
+        </div>
+      </ng-template>
+
+      <div class="item-description">
+        {{ group.description }}
+        @if (group.projectName) {
+          <p-badge
+            [value]="group.projectName"
+            badgeSize="small"
+            [style.backgroundColor]="group.projectColor"
+          />
+        }
+      </div>
+    </p-accordion-header>
+    <p-accordion-content>
+      <ul>
+        @for (entry of group.entries; track entry.id) {
+          <li>
+            {{ entry.duration | timespan: "HH:mm:ss" }}
+          </li>
+        }
+      </ul>
+    </p-accordion-content>
+  </p-accordion-panel>
+}
