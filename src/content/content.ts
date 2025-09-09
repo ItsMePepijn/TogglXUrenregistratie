@@ -1,6 +1,9 @@
 import { EXTENSION_MESSAGES } from '../core/constants/messages.constant';
-import { MessageBase } from '../core/models/message-base.model';
-import { ExtensionMessenger } from '../core/services/extension-messager';
+import {
+  FillTimeEntryRequest,
+  FillTimeEntryRequestPayload,
+} from '../core/models/fill-time-entry-request.model';
+import { ExtensionMessenger } from '../core/helpers/extension-messager.helper';
 
 const FORM_SELECTION_ID = 'createTimeRegistrationForm';
 const BASE_URL = window.location.origin;
@@ -12,7 +15,7 @@ ExtensionMessenger.startListeningToMsg(
   },
 );
 
-ExtensionMessenger.startListeningToMsg<{ payload: any } & MessageBase>(
+ExtensionMessenger.startListeningToMsg<FillTimeEntryRequest>(
   EXTENSION_MESSAGES.POPUP_SOURCE.FILL_TIME_ENTRY,
   async (message) => {
     await fillTimeEntryGroup(message.payload);
@@ -48,16 +51,7 @@ function getSelectedDate() {
   return dateInput.value.split(' ')[0];
 }
 
-async function fillTimeEntryGroup(timeEntryGroup: any) {
-  if (
-    !timeEntryGroup?.pbiNumber ||
-    !timeEntryGroup?.description ||
-    !timeEntryGroup?.time
-  ) {
-    console.warn('Incomplete time entry group:', timeEntryGroup);
-    return;
-  }
-
+async function fillTimeEntryGroup(timeEntryGroup: FillTimeEntryRequestPayload) {
   const form = document.getElementById(FORM_SELECTION_ID);
   if (!form) {
     console.warn('Form not found');

@@ -5,8 +5,9 @@ import { TimeEntryGroup } from '../models/time-entry-group.model';
 import { parseDescription } from '../helpers/description-parser.helper';
 import { TimespanPipe } from '../pipes/timespan.pipe';
 import { EXTENSION_MESSAGES } from '../../../core/constants/messages.constant';
-import { ExtensionMessenger } from '../../../core/services/extension-messager';
+import { ExtensionMessenger } from '../../../core/helpers/extension-messager.helper';
 import { MessageBase } from '../../../core/models/message-base.model';
+import { FillTimeEntryRequest } from '../../../core/models/fill-time-entry-request.model';
 
 @Injectable({
   providedIn: 'root',
@@ -74,10 +75,12 @@ export class ContentService {
         ),
       };
 
-      await ExtensionMessenger.sendMessageToContent({
-        type: EXTENSION_MESSAGES.POPUP_SOURCE.FILL_TIME_ENTRY,
-        payload,
-      });
+      await ExtensionMessenger.sendMessageToContent<FillTimeEntryRequest, void>(
+        {
+          type: EXTENSION_MESSAGES.POPUP_SOURCE.FILL_TIME_ENTRY,
+          payload,
+        },
+      );
     } catch (error) {
       console.error('Error filling time entry group in content script:', error);
     }
