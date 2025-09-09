@@ -4,8 +4,12 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
+    "build:popup": "ng build",
+    "build:content": "esbuild src/content/content.ts --bundle --minify --outfile=dist/extension/browser/content.js --platform=browser --target=es2020",
+    "build": "npm run build:popup && npm run build:content",
+    "watch:popup": "npm run build:popup -- --watch --configuration development",
+    "watch:content": "npm run build:content -- --watch",
+    "watch": "concurrently --kill-others --names \"POPUP,CONTENT\" -c \"blue,green\" \"npm run watch:popup\" \"npm run watch:content\"",
     "test": "ng test"
   },
   "prettier": {
@@ -38,6 +42,8 @@
     "@angular/compiler-cli": "^20.1.0",
     "@types/chrome": "^0.1.0",
     "@types/jasmine": "~5.1.0",
+    "concurrently": "^9.2.1",
+    "esbuild": "^0.25.9",
     "jasmine-core": "~5.8.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",

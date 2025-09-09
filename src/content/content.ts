@@ -1,26 +1,26 @@
-const FORM_SELECTION_ID = "createTimeRegistrationForm";
+const FORM_SELECTION_ID = 'createTimeRegistrationForm';
 const BASE_URL = window.location.origin;
 
 chrome.runtime.onMessage.addListener(async function (request, _, sendResponse) {
-  if (request.type === "getSelectedDate")
+  if (request.type === 'getSelectedDate')
     sendResponse({ selectedDate: getSelectedDate() });
 
-  if (request.type === "fillTimeEntry")
+  if (request.type === 'fillTimeEntry')
     await fillTimeEntryGroup(request.payload);
 
   return true;
 });
 
-document.addEventListener("click", () => {
+document.addEventListener('click', () => {
   publishSelectedDate();
 });
 
 function publishSelectedDate() {
   const selectedDate = getSelectedDate();
-  console.log("Publishing selected date:", selectedDate);
+  console.log('Publishing selected date:', selectedDate);
   if (selectedDate) {
     chrome.runtime.sendMessage({
-      type: "selectedDateChanged",
+      type: 'selectedDateChanged',
       selectedDate,
     });
   }
@@ -32,40 +32,40 @@ function getSelectedDate() {
     return null;
   }
 
-  const dateInput = form.querySelector("#Date");
+  const dateInput = form.querySelector('#Date') as HTMLInputElement | null;
   if (!dateInput) {
     return null;
   }
 
-  return dateInput.value.split(" ")[0];
+  return dateInput.value.split(' ')[0];
 }
 
-async function fillTimeEntryGroup(timeEntryGroup) {
+async function fillTimeEntryGroup(timeEntryGroup: any) {
   if (
     !timeEntryGroup?.pbiNumber ||
     !timeEntryGroup?.description ||
     !timeEntryGroup?.time
   ) {
-    console.warn("Incomplete time entry group:", timeEntryGroup);
+    console.warn('Incomplete time entry group:', timeEntryGroup);
     return;
   }
 
   const form = document.getElementById(FORM_SELECTION_ID);
   if (!form) {
-    console.warn("Form not found");
+    console.warn('Form not found');
     return;
   }
 
-  const dateInput = form.querySelector("#Date");
+  const dateInput = form.querySelector('#Date') as HTMLInputElement | null;
   if (!dateInput) {
-    console.warn("Date input not found");
+    console.warn('Date input not found');
     return;
   }
   const date = dateInput.value;
 
-  const createFormDiv = form.querySelector("#create-form");
+  const createFormDiv = form.querySelector('#create-form');
   if (!createFormDiv) {
-    console.warn("Create form div not found");
+    console.warn('Create form div not found');
     return;
   }
 
@@ -77,13 +77,13 @@ async function fillTimeEntryGroup(timeEntryGroup) {
 
   const verifyDescriptionRegex = new RegExp(`#${timeEntryGroup.pbiNumber} -`);
   if (!firstItem || !verifyDescriptionRegex.test(firstItem.text)) {
-    console.warn("Description verification failed");
+    console.warn('Description verification failed');
     return;
   }
 
   const postData = {
-    ProductBacklogItemId: firstItem.id.replace("#", ""),
-    ViewModelName: "CreateTimeRegistrationViewModel",
+    ProductBacklogItemId: firstItem.id.replace('#', ''),
+    ViewModelName: 'CreateTimeRegistrationViewModel',
     Date: date,
     Description: timeEntryGroup.description,
     Duration: timeEntryGroup.time,
@@ -92,7 +92,7 @@ async function fillTimeEntryGroup(timeEntryGroup) {
   const postResp = await fetch(
     `${BASE_URL}/TimeRegistration/PostProductBacklogItemModel`,
     {
-      method: "POST",
+      method: 'POST',
       body: new URLSearchParams(postData),
     },
   );

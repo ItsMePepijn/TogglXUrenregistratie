@@ -17,6 +17,8 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
+            "outputPath": "dist/extension",
+            "deleteOutputPath": false,
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.json",
             "inlineStyleLanguage": "scss",
@@ -25,8 +27,11 @@
                 "glob": "**/*",
                 "input": "public"
               },
-              "src/manifest.json",
-              "src/content.js"
+              {
+                "glob": "manifest.json",
+                "input": "src/core",
+                "output": "/"
+              }
             ],
             "styles": ["src/styles.scss"]
           },
