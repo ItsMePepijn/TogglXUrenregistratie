@@ -11,7 +11,7 @@
         }
       },
       "root": "",
-      "sourceRoot": "src",
+      "sourceRoot": "src/popup",
       "prefix": "app",
       "architect": {
         "build": {
@@ -19,7 +19,7 @@
           "options": {
             "outputPath": "dist/extension",
             "deleteOutputPath": false,
-            "browser": "src/main.ts",
+            "browser": "src/popup/main.ts",
             "tsConfig": "tsconfig.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -33,7 +33,7 @@
                 "output": "/"
               }
             ],
-            "styles": ["src/styles.scss"]
+            "styles": ["src/popup/styles.scss"]
           },
           "configurations": {
             "production": {
