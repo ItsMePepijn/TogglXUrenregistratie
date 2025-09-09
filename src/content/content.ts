@@ -1,15 +1,23 @@
+import { EXTENSION_MESSAGES } from '../core/constants/messages.constant';
+import { MessageBase } from '../core/models/message-base.model';
+import { ExtensionMessenger } from '../core/services/extension-messager';
+
 const FORM_SELECTION_ID = 'createTimeRegistrationForm';
 const BASE_URL = window.location.origin;
 
-chrome.runtime.onMessage.addListener(async function (request, _, sendResponse) {
-  if (request.type === 'getSelectedDate')
-    sendResponse({ selectedDate: getSelectedDate() });
+ExtensionMessenger.startListeningToMsg(
+  EXTENSION_MESSAGES.POPUP_SOURCE.GET_SELECTED_DATE,
+  (_, sendResponse) => {
+    sendResponse(getSelectedDate());
+  },
+);
 
-  if (request.type === 'fillTimeEntry')
-    await fillTimeEntryGroup(request.payload);
-
-  return true;
-});
+ExtensionMessenger.startListeningToMsg<{ payload: any } & MessageBase>(
+  EXTENSION_MESSAGES.POPUP_SOURCE.FILL_TIME_ENTRY,
+  async (message) => {
+    await fillTimeEntryGroup(message.payload);
+  },
+);
 
 document.addEventListener('click', () => {
   publishSelectedDate();
@@ -17,10 +25,10 @@ document.addEventListener('click', () => {
 
 function publishSelectedDate() {
   const selectedDate = getSelectedDate();
-  console.log('Publishing selected date:', selectedDate);
+
   if (selectedDate) {
-    chrome.runtime.sendMessage({
-      type: 'selectedDateChanged',
+    ExtensionMessenger.sendMessageToRuntime({
+      type: EXTENSION_MESSAGES.CONTENT_SOURCE.SELECTED_DATE_CHANGED,
       selectedDate,
     });
   }

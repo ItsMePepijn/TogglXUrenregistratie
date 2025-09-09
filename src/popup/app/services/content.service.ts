@@ -4,6 +4,9 @@ import { reverseDate } from '../helpers/date.helper';
 import { TimeEntryGroup } from '../models/time-entry-group.model';
 import { parseDescription } from '../helpers/description-parser.helper';
 import { TimespanPipe } from '../pipes/timespan.pipe';
+import { EXTENSION_MESSAGES } from '../../../core/constants/messages.constant';
+import { ExtensionMessenger } from '../../../core/services/extension-messager';
+import { MessageBase } from '../../../core/models/message-base.model';
 
 @Injectable({
   providedIn: 'root',
@@ -21,17 +24,14 @@ export class ContentService {
 
   private async initializeSelectedDate(): Promise<void> {
     try {
-      const activeTabId = await this.getActiveTabId();
-      if (activeTabId === null) {
-        console.warn('No active tab found to get selected date.');
-        return;
-      }
-
-      const response = await chrome.tabs.sendMessage(activeTabId, {
-        type: 'getSelectedDate',
+      const response = await ExtensionMessenger.sendMessageToContent<
+        MessageBase,
+        string
+      >({
+        type: EXTENSION_MESSAGES.POPUP_SOURCE.GET_SELECTED_DATE,
       });
 
-      const date = this.parsePossibleDate(response.selectedDate);
+      const date = this.parsePossibleDate(response);
       this._selectedDate.next(date);
     } catch (error) {
       console.error('Error getting selected date from content script:', error);
@@ -39,46 +39,22 @@ export class ContentService {
   }
 
   private initSelectedDateListener(): void {
-    try {
-      chrome.runtime.onMessage.addListener((message: any) => {
-        if (message.type === 'selectedDateChanged') {
-          const date = this.parsePossibleDate(message.selectedDate);
-          this._selectedDate.next(date);
-        }
-      });
-    } catch (error) {
-      console.error('Error initializing selected date listener:', error);
-    }
-  }
-
-  private parsePossibleDate(dateString: any): Date | null {
-    return dateString ? new Date(reverseDate(dateString)) : null;
-  }
-
-  private async getActiveTabId(): Promise<number | null> {
-    const tabs = await chrome.tabs.query({
-      active: true,
-      currentWindow: true,
+    ExtensionMessenger.startListeningToMsg<
+      { selectedDate: string | null } & MessageBase
+    >(EXTENSION_MESSAGES.CONTENT_SOURCE.SELECTED_DATE_CHANGED, (message) => {
+      const date = this.parsePossibleDate(message.selectedDate);
+      this._selectedDate.next(date);
     });
+  }
 
-    if (tabs.length === 0) {
-      return null;
-    }
-
-    const { id } = tabs[0];
-    return id ?? null;
+  private parsePossibleDate(dateString: string | null): Date | null {
+    return dateString ? new Date(reverseDate(dateString)) : null;
   }
 
   public async fillTimeEntryGroup(
     timeEntryGroup: TimeEntryGroup,
   ): Promise<void> {
     try {
-      const activeTabId = await this.getActiveTabId();
-      if (activeTabId === null) {
-        console.warn('No active tab found to fill time entry.');
-        return;
-      }
-
       const parsedDescription = parseDescription(
         timeEntryGroup.description,
         this.descriptionRegex,
@@ -98,8 +74,8 @@ export class ContentService {
         ),
       };
 
-      chrome.tabs.sendMessage(activeTabId, {
-        type: 'fillTimeEntry',
+      await ExtensionMessenger.sendMessageToContent({
+        type: EXTENSION_MESSAGES.POPUP_SOURCE.FILL_TIME_ENTRY,
         payload,
       });
     } catch (error) {
