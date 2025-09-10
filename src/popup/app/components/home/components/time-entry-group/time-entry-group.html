@@ -3,10 +3,13 @@
     <p-accordion-header>
       <ng-template #toggleicon let-active="active">
         <div class="item-icon">
-          <p-badge
-            [value]="group.totalDuration | timespan: 'HH:mm:ss'"
-            (click)="contentService.fillTimeEntryGroup(group)"
+          <p-button
+            icon="pi pi-save"
+            size="small"
+            outlined
+            (click)="handleSave($event, group)"
           />
+          <p-badge [value]="group.totalDuration | timespan: 'HH:mm:ss'" />
           @if (active) {
             <i class="pi pi-chevron-up"></i>
           } @else {

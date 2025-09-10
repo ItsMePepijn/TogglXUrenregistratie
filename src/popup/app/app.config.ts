@@ -29,6 +29,9 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {
+        options: {
+          darkModeSelector: '.dark',
+        },
         preset: Theme,
       },
     }),

@@ -6,10 +6,17 @@ import { BehaviorSubject } from 'rxjs';
 import { TimespanPipe } from '../../../../pipes/timespan.pipe';
 import { TimeEntryGroup } from '../../../../models/time-entry-group.model';
 import { ContentService } from '../../../../services/content.service';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-time-entry-group',
-  imports: [AccordionModule, BadgeModule, AsyncPipe, TimespanPipe],
+  imports: [
+    AccordionModule,
+    BadgeModule,
+    AsyncPipe,
+    TimespanPipe,
+    ButtonModule,
+  ],
   templateUrl: './time-entry-group.html',
   styleUrl: './time-entry-group.scss',
 })
@@ -22,4 +29,13 @@ export class TimeEntryGroupComponent {
   @Input({ required: true }) index!: number;
 
   constructor(protected readonly contentService: ContentService) {}
+
+  protected async handleSave(
+    event: Event,
+    group: TimeEntryGroup,
+  ): Promise<void> {
+    event.stopPropagation();
+
+    await this.contentService.fillTimeEntryGroup(group);
+  }
 }
