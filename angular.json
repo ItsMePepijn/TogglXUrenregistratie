@@ -33,7 +33,12 @@
                 "output": "/"
               }
             ],
-            "styles": ["src/popup/styles.scss"]
+            "styles": ["src/popup/styles.scss"],
+            "optimization": {
+              "styles": {
+                "inlineCritical": false
+              }
+            }
           },
           "configurations": {
             "production": {
