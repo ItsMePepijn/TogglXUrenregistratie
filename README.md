@@ -1,59 +1,35 @@
 # TogglXUrenregistratie
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.0.
+TogglXUrenregistratie is a chrome plugin designed to copy time entries from [TogglTrack](https://toggl.com/) into Covadis' [Urenregistratie](https://covadis-urenregistratie.azurewebsites.net/). The plugin will automatically pull and display all registered time entries from TogglTrack for the current selected date in Urenregistratie. To save a time entry group to Urenregistratie, simply press the save button and TogglXUrenregistratie will do the rest.
 
-## Development server
+## Installation
 
-To start a local development server, run:
+Installation guide will be added in the future.
 
-```bash
-ng serve
-```
+## Developing
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- Install all npm dependencies:
 
 ```bash
-ng generate component component-name
+npm install
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+- Start build watch
 
 ```bash
-ng generate --help
+npm run watch
 ```
+
+- Once the watch script is running, open chrome and navigate to extension settings, usually [chrome://extensions/](chrome://extensions/). Enable developer mode and click the `Load unpacked` button. Select the `dist/extension/browser` folder. The extension is now loaded into the browser. Any changes will automatically be compiled into the `dist/` folder aswell.
+  - When making changes in the popup (angular) code, simply re-opening the popup will load the latest changes.
+  - When making changes in the content script code, a total reload of the extension is required. This can be done in extension settings. Click the reload button on the extension, after the extension is reloaded, refresh any open webpages to load latest the changes.
 
 ## Building
 
-To build the project run:
+To build the project for production run:
 
 ```bash
 ng build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+This will compile your project and store the build artifacts in the `dist/` directory. The production build optimizes the plugin for performance and speed and size.
