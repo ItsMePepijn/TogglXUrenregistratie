@@ -30,14 +30,12 @@
   @if (loginError$ | async; as error) {
     <p-message severity="error" [text]="error" />
   }
-  @if (isLoading$ | async) {
-    <p-button disabled fluid><i class="pi pi-spin pi-spinner"></i></p-button>
-  } @else {
-    <p-button
-      type="submit"
-      label="Sign in"
-      [disabled]="loginForm.invalid"
-      fluid
-    />
-  }
+
+  <p-button
+    type="submit"
+    label="Sign in"
+    [disabled]="loginForm.invalid"
+    [loading]="isLoading$ | async"
+    fluid
+  />
 </form>
