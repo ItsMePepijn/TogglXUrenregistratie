@@ -20,7 +20,7 @@ npm install
 npm run watch
 ```
 
-- Once the watch script is running, open chrome and navigate to extension settings, usually [chrome://extensions/](chrome://extensions/). Enable developer mode and click the `Load unpacked` button. Select the `dist/extension/browser` folder. The extension is now loaded into the browser. Any changes will automatically be compiled into the `dist/` folder aswell.
+- Once the watch script is running, open chrome and navigate to extension settings, usually [chrome://extensions/](chrome://extensions/). Enable developer mode and click the `Load unpacked` button. Select the `dist/extension/browser` directory. The extension is now loaded into the browser. Any changes will automatically be compiled into the `dist/` directory aswell.
   - When making changes in the popup (angular) code, simply re-opening the popup will load the latest changes.
   - When making changes in the content script code, a total reload of the extension is required. This can be done in extension settings. Click the reload button on the extension, after the extension is reloaded, refresh any open webpages to load latest the changes.
 
