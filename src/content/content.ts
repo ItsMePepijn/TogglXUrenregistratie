@@ -65,6 +65,15 @@ async function fillTimeEntryGroup(timeEntryGroup: FillTimeEntryRequestPayload) {
   }
   const date = dateInput.value;
 
+  const employeeIdInput = form.querySelector(
+    '#EmployeeId',
+  ) as HTMLInputElement | null;
+  if (!employeeIdInput) {
+    console.warn('EmployeeId input not found');
+    return;
+  }
+  const employeeId = employeeIdInput.value;
+
   const createFormDiv = form.querySelector('#create-form');
   if (!createFormDiv) {
     console.warn('Create form div not found');
@@ -87,6 +96,7 @@ async function fillTimeEntryGroup(timeEntryGroup: FillTimeEntryRequestPayload) {
     ProductBacklogItemId: firstItem.id.replace('#', ''),
     ViewModelName: 'CreateTimeRegistrationViewModel',
     Date: date,
+    EmployeeId: employeeId,
     Description: timeEntryGroup.description,
     Duration: timeEntryGroup.time,
   };
@@ -101,4 +111,14 @@ async function fillTimeEntryGroup(timeEntryGroup: FillTimeEntryRequestPayload) {
 
   const newFormContent = await postResp.text();
   createFormDiv.innerHTML = newFormContent;
+
+  const saveFormButton = form.querySelector(
+    '.saveFormBtn',
+  ) as HTMLButtonElement | null;
+
+  if (saveFormButton) {
+    saveFormButton.click();
+  } else {
+    console.warn('Save button not found');
+  }
 }
