@@ -4,3 +4,11 @@ form {
   gap: 0.75rem;
   width: 263px;
 }
+
+p-button[link] {
+  width: fit-content;
+
+  &::ng-deep > button {
+    padding: 0;
+  }
+}

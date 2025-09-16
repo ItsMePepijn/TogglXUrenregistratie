@@ -1,31 +1,60 @@
 <h2>Please enter your credentials</h2>
 
 <form [formGroup]="loginForm" (ngSubmit)="login()">
-  <p-floatlabel variant="on">
-    <p-iconfield>
-      <p-inputicon class="pi pi-envelope" />
-      <input
-        pInputText
-        id="email"
-        [formControl]="loginForm.controls.email"
-        type="email"
-      />
-      <label for="email">Email</label>
-    </p-iconfield>
-  </p-floatlabel>
+  @if (useToken$ | async) {
+    <p-floatlabel variant="on">
+      <p-iconfield>
+        <p-inputicon class="pi pi-lock" />
+        <input
+          pInputText
+          id="token"
+          [formControl]="loginForm.controls.token"
+          type="password"
+        />
+        <label for="token">Token</label>
+      </p-iconfield>
+    </p-floatlabel>
 
-  <p-floatlabel variant="on">
-    <p-iconfield>
-      <p-inputicon class="pi pi-lock" />
-      <input
-        pInputText
-        id="password"
-        [formControl]="loginForm.controls.password"
-        type="password"
-      />
-      <label for="password">Password</label>
-    </p-iconfield>
-  </p-floatlabel>
+    <p-button
+      label="Use credentials"
+      link
+      size="small"
+      (click)="setUseToken(false)"
+    />
+  } @else {
+    <p-floatlabel variant="on">
+      <p-iconfield>
+        <p-inputicon class="pi pi-envelope" />
+        <input
+          pInputText
+          id="email"
+          [formControl]="loginForm.controls.email"
+          type="email"
+        />
+        <label for="email">Email</label>
+      </p-iconfield>
+    </p-floatlabel>
+
+    <p-floatlabel variant="on">
+      <p-iconfield>
+        <p-inputicon class="pi pi-lock" />
+        <input
+          pInputText
+          id="password"
+          [formControl]="loginForm.controls.password"
+          type="password"
+        />
+        <label for="password">Password</label>
+      </p-iconfield>
+    </p-floatlabel>
+
+    <p-button
+      label="Use Toggl token"
+      link
+      size="small"
+      (click)="setUseToken(true)"
+    />
+  }
 
   @if (loginError$ | async; as error) {
     <p-message severity="error" [text]="error" />
