@@ -5,6 +5,7 @@ import { ContentService } from '../../services/content.service';
 import { AsyncPipe, DatePipe } from '@angular/common';
 import {
   BehaviorSubject,
+  distinctUntilChanged,
   filter,
   map,
   Observable,
@@ -70,6 +71,7 @@ export class Home implements OnInit {
     this.contentService.selectedDate$
       .pipe(
         takeUntilDestroyed(this.destroyRef),
+        distinctUntilChanged(),
         tap(() => {
           this.isLoading$.next(true);
         }),
