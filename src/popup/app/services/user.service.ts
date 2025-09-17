@@ -26,24 +26,26 @@ export class UserService {
   constructor(private readonly togglService: TogglService) {}
 
   public login(
-    email: string,
-    password: string,
+    emailOrToken: string,
+    password?: string,
   ): Observable<{ success: true } | { error: string; success: false }> {
-    return this.togglService.getUserWithCredentials(email, password).pipe(
-      tap((user) => {
-        this._user$.next(user);
-        if (user) {
-          this.saveUserToStorage(user);
-        }
-      }),
-      map(() => ({ success: true as const })),
-      catchError((error) => {
-        return of({
-          error: error.error || 'Unknown error occurred',
-          success: false,
-        });
-      }),
-    );
+    return this.togglService
+      .getUserWithCredentials(emailOrToken, password)
+      .pipe(
+        tap((user) => {
+          this._user$.next(user);
+          if (user) {
+            this.saveUserToStorage(user);
+          }
+        }),
+        map(() => ({ success: true as const })),
+        catchError((error) => {
+          return of({
+            error: error.error || 'Unknown error occurred',
+            success: false,
+          });
+        }),
+      );
   }
 
   public logout(): void {

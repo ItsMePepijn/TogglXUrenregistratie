@@ -99,20 +99,22 @@ export class Login implements OnInit {
 
           return useToken
             ? {
-                email: data.token ?? null,
-                password: 'api_token',
+                token: data.token,
               }
             : {
-                email: data.email ?? null,
-                password: data.password ?? null,
+                email: data.email,
+                password: data.password,
               };
         }),
-        filter((data) => data.email !== null && data.password !== null),
+        filter((data) => (!!data.email && !!data.password) || !!data.token),
         tap(() => {
           this._isLoading$.next(true);
         }),
         switchMap((data) => {
-          return this.userService.login(data.email!, data.password!);
+          return this.userService.login(
+            (data.email ?? data.token)!,
+            data.password ?? undefined,
+          );
         }),
       )
       .subscribe((result) => {

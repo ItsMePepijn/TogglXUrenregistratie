@@ -14,12 +14,15 @@ export class TogglService {
   constructor(private readonly http: HttpClient) {}
 
   public getUserWithCredentials(
-    email: string,
-    password: string,
+    emailOrToken: string,
+    password?: string,
   ): Observable<User | null> {
     return this.http.get<User | null>(`${this.apiUrl}/me`, {
       headers: {
-        Authorization: this.getAuthHeaderFromCredentials(email, password),
+        Authorization: this.getAuthHeaderFromCredentials(
+          emailOrToken,
+          password,
+        ),
       },
     });
   }
