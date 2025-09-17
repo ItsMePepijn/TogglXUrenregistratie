@@ -1,0 +1,36 @@
+<div class="settings">
+  <div class="settings__group">
+    <p-divider align="left" type="solid">General</p-divider>
+    <div class="settings__group__fields">
+      <div class="settings__group__fields__field">
+        <div class="settings__group__fields__field__label">
+          <label for="descriptionSelector">Description Selector</label>
+          <i
+            class="pi pi-info-circle"
+            pTooltip="Must contain both {pbi} and {description} tokens with at least one character between them. It may also contain regex. Example: '{pbi} - {description}' or '{description} {pbi}'"
+            tooltipPosition="top"
+          ></i>
+        </div>
+        <input
+          type="text"
+          pInputText
+          pSize="small"
+          [formControl]="settingsForm.controls.descriptionSelector"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  @if (isUnsaved$ | async) {
+    <p-button
+      label="Save"
+      size="small"
+      [disabled]="settingsForm.invalid"
+      (click)="saveSettings()"
+    />
+  } @else {
+    <p-button label="Saved!" size="small" disabled />
+  }
+</div>

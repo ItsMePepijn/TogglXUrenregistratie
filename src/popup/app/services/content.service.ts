@@ -8,6 +8,8 @@ import { EXTENSION_MESSAGES } from '../../../core/constants/messages.constant';
 import { ExtensionMessenger } from '../../../core/helpers/extension-messager.helper';
 import { MessageBase } from '../../../core/models/message-base.model';
 import { FillTimeEntryRequest } from '../../../core/models/fill-time-entry-request.model';
+import { SettingsService } from './settings.service';
+import { DESCRIPTION_SELECTOR_TOKENS } from '../constants/description-selector.constant';
 
 @Injectable({
   providedIn: 'root',
@@ -16,9 +18,10 @@ export class ContentService {
   private readonly _selectedDate = new BehaviorSubject<Date | null>(null);
   public readonly selectedDate$ = this._selectedDate.asObservable();
 
-  private readonly descriptionRegex = /(\d+) - (.*)/;
-
-  constructor(private readonly timespanPipe: TimespanPipe) {
+  constructor(
+    private readonly timespanPipe: TimespanPipe,
+    private readonly settingsService: SettingsService,
+  ) {
     this.initializeSelectedDate();
     this.initSelectedDateListener();
   }
@@ -58,7 +61,7 @@ export class ContentService {
     try {
       const parsedDescription = parseDescription(
         timeEntryGroup.description,
-        this.descriptionRegex,
+        this.getConfiguredDescriptionSelectorAsRegex(),
       );
 
       if (!parsedDescription?.pbiNumber || !parsedDescription?.description) {
@@ -84,5 +87,20 @@ export class ContentService {
     } catch (error) {
       console.error('Error filling time entry group in content script:', error);
     }
+  }
+
+  private getConfiguredDescriptionSelectorAsRegex(): RegExp {
+    let selector = this.settingsService.currentSettings?.descriptionSelector;
+    if (!selector) {
+      throw new Error('Description selector is not configured');
+    }
+
+    selector = selector.replace(DESCRIPTION_SELECTOR_TOKENS.PBI, '(\\d+)');
+    selector = selector.replace(
+      DESCRIPTION_SELECTOR_TOKENS.DESCRIPTION,
+      '(.*)',
+    );
+
+    return new RegExp(selector);
   }
 }
