@@ -25,6 +25,10 @@ jobs:
         run: |
           npm run build
 
+      - name: Update variables in config.json
+        run: |
+          node scripts/update-version.js ${{ github.event.release.tag_name }} dist/extension/browser/config.json
+
       - name: Create release asset
         run: |
           cd dist/extension
