@@ -14,10 +14,14 @@ import { providePrimeNG } from 'primeng/config';
 import { Theme } from './theme';
 import { TimespanPipe } from './pipes/timespan.pipe';
 import { MessageService } from 'primeng/api';
+import { ConfigService } from './services/config.service';
 
 async function initializeApp() {
   const userService = inject(UserService);
+  const configService = inject(ConfigService);
+
   await userService.loadUserFromStorage();
+  await configService.loadConfig();
 }
 
 export const appConfig: ApplicationConfig = {
