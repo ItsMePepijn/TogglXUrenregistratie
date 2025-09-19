@@ -27,8 +27,16 @@ jobs:
 
       - name: Create release asset
         run: |
+          echo "Contents of dist/extension:"
+          ls -la dist/extension/
+          echo "Contents of dist/extension/browser:"
+          ls -la dist/extension/browser/
+          echo "Contents of dist/extension/browser (recursive):"
+          find dist/extension/browser -type f
           cd dist/extension
           zip -r "../../${{ github.event.release.tag_name }}.zip" browser
+          echo "Contents of zip file:"
+          unzip -l "../../${{ github.event.release.tag_name }}.zip"
 
       - name: Upload release asset
         env:
