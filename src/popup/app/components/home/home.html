@@ -1,5 +1,7 @@
 <div class="sub-header">
-  <p>{{ contentService.selectedDate$ | async | date: "fullDate" }}</p>
+  <p class="selected-date">
+    {{ contentService.selectedDate$ | async | date: "fullDate" }}
+  </p>
   @if (totalDuration$ | async; as totalDuration) {
     <p-badge [value]="totalDuration | timespan: 'HH:mm:ss'" />
   }
@@ -10,11 +12,27 @@
     <p>Loading...</p>
   } @else {
     @if (timeEntryGroups$ | async; as groups) {
-      <p-accordion [multiple]="true">
-        @for (group of groups; track $index) {
-          <app-time-entry-group [group]="group" [index]="$index" />
-        }
-      </p-accordion>
+      @if (groups.length > 0) {
+        <p-accordion [multiple]="true">
+          @for (group of groups; track $index) {
+            <app-time-entry-group [group]="group" [index]="$index" />
+          }
+        </p-accordion>
+      } @else {
+        <app-message
+          message="No time entries found for the selected date."
+          icon="pi pi-info-circle"
+        />
+      }
+    } @else if (noDateSelected$ | async) {
+      <app-message
+        message="Please select a date to view time entries."
+        icon="pi pi-clock"
+      />
+    } @else {
+      @if (error$ | async; as error) {
+        <app-message [message]="error" icon="pi pi-exclamation-circle" />
+      }
     }
   }
 </div>

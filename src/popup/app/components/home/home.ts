@@ -5,6 +5,7 @@ import { ContentService } from '../../services/content.service';
 import { AsyncPipe, DatePipe } from '@angular/common';
 import {
   BehaviorSubject,
+  debounceTime,
   distinctUntilChanged,
   filter,
   map,
@@ -24,6 +25,7 @@ import {
   TimeEntryGroupImpl,
 } from '../../models/time-entry-group.model';
 import { TimeEntryGroupComponent } from './components/time-entry-group/time-entry-group';
+import { Message } from './components/message/message';
 
 @Component({
   selector: 'app-home',
@@ -35,6 +37,7 @@ import { TimeEntryGroupComponent } from './components/time-entry-group/time-entr
     AccordionModule,
     BadgeModule,
     TimeEntryGroupComponent,
+    Message,
   ],
   templateUrl: './home.html',
   styleUrl: './home.scss',
@@ -57,7 +60,10 @@ export class Home implements OnInit {
       }),
     );
 
-  protected readonly isLoading$ = new BehaviorSubject<boolean>(false);
+  private readonly _noDateSelected$ = new BehaviorSubject<boolean>(false);
+  protected readonly noDateSelected$ = this._noDateSelected$.asObservable();
+
+  protected readonly isLoading$ = new BehaviorSubject<boolean>(true);
   protected readonly error$ = new BehaviorSubject<string | null>(null);
 
   constructor(
@@ -72,14 +78,17 @@ export class Home implements OnInit {
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         distinctUntilChanged(),
+        debounceTime(50),
+        tap((date) => {
+          if (date == null) {
+            this.isLoading$.next(false);
+          }
+        }),
+        filter((date) => date !== null),
         tap(() => {
           this.isLoading$.next(true);
         }),
         switchMap((selectedDate) => {
-          if (!selectedDate) {
-            return of(null);
-          }
-
           return this.userService.getMyTimeEntriesForDate(selectedDate);
         }),
         filter((result) => result !== null),
@@ -94,6 +103,15 @@ export class Home implements OnInit {
             this.error$.next(result.error);
           }
         }
+      });
+
+    this.contentService.selectedDate$
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        map((date) => date == null),
+      )
+      .subscribe((dateIsSelected) => {
+        this._noDateSelected$.next(dateIsSelected);
       });
   }
 
