@@ -29,14 +29,14 @@ jobs:
     - name: Create release asset
       run: |
         cd dist/extension/browser
+        # Verify essential files exist
+        ls -la manifest.json content.js index.html main.js
         zip -r "../../../${{ github.event.release.tag_name }}.zip" .
+        # Verify zip was created
+        ls -la "../../../${{ github.event.release.tag_name }}.zip"
         
     - name: Upload release asset
-      uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./${{ github.event.release.tag_name }}.zip
-        asset_name: ${{ github.event.release.tag_name }}.zip
-        asset_content_type: application/zip
+      run: |
+        gh release upload ${{ github.event.release.tag_name }} ${{ github.event.release.tag_name }}.zip
