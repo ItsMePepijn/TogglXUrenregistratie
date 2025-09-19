@@ -29,7 +29,7 @@ npm run watch
 To build the project for production run:
 
 ```bash
-ng build
+npm run build
 ```
 
 This will compile your project and store the build artifacts in the `dist/` directory. The production build optimizes the plugin for performance and speed and size.
