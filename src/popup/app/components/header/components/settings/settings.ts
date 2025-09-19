@@ -19,6 +19,7 @@ import { RoundingDirection } from '../../../../enums/rounding-direction.enum';
 import { ROUNDING_TIME_LABELS } from '../../../../constants/rounding-time-labels.constant';
 import { ROUNDING_DIRECTION_LABELS } from '../../../../constants/rounding-direction-labels.constant';
 import { SelectButton } from 'primeng/selectbutton';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-settings',
@@ -55,9 +56,24 @@ export class Settings implements OnInit {
   private readonly _isUnsaved$ = new BehaviorSubject<boolean>(false);
   protected readonly isUnsaved$ = this._isUnsaved$.asObservable();
 
+  protected readonly RoundingTimeOptions = Object.values(RoundingTime).map(
+    (option) => ({
+      label: ROUNDING_TIME_LABELS[option],
+      value: option,
+    }),
+  );
+
+  protected readonly RoundingDirectionOptions = Object.values(
+    RoundingDirection,
+  ).map((option) => ({
+    label: ROUNDING_DIRECTION_LABELS[option],
+    value: option,
+  }));
+
   constructor(
-    private readonly settingsService: SettingsService,
     private readonly destroyRef: DestroyRef,
+    private messageService: MessageService,
+    protected readonly settingsService: SettingsService,
   ) {}
 
   public ngOnInit() {
@@ -92,17 +108,36 @@ export class Settings implements OnInit {
     this._isUnsaved$.next(false);
   }
 
-  protected readonly RoundingTimeOptions = Object.values(RoundingTime).map(
-    (option) => ({
-      label: ROUNDING_TIME_LABELS[option],
-      value: option,
-    }),
-  );
+  protected importSettings(event: Event): void {
+    const input = event.target as HTMLInputElement;
 
-  protected readonly RoundingDirectionOptions = Object.values(
-    RoundingDirection,
-  ).map((option) => ({
-    label: ROUNDING_DIRECTION_LABELS[option],
-    value: option,
-  }));
+    if (!input.files || input.files.length === 0) {
+      return;
+    }
+
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const importedSettings: Partial<{
+          descriptionSelector: string;
+          roundingTime: RoundingTime;
+          roundingDirection: RoundingDirection;
+        }> = JSON.parse(reader.result as string);
+
+        this.settingsForm.patchValue(importedSettings);
+      } catch (error) {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail:
+            'Failed to import the settings file. Please make sure it is valid JSON.',
+        });
+      }
+    };
+
+    reader.readAsText(file);
+
+    input.value = '';
+  }
 }

@@ -34,6 +34,23 @@ export class SettingsService {
     this.saveSettingsToStorage(settings);
   }
 
+  public downloadSettingsAsJson(): void {
+    if (!this.currentSettings) {
+      return;
+    }
+
+    const settingsString =
+      'data:text/json;charset=utf-8,' +
+      encodeURIComponent(JSON.stringify(this.currentSettings, null, 2));
+
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute('href', settingsString);
+    downloadAnchorNode.setAttribute('download', 'settings.json');
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+  }
+
   private loadSettingsFromStorage(): void {
     chrome.storage.local.get([this.SETTINGS_STORAGE_KEY], (result) => {
       if (chrome.runtime.lastError) {

@@ -63,6 +63,38 @@
       </div>
     </div>
   </div>
+
+  <div class="settings__group">
+    <p-divider align="left" type="solid">Settings backup</p-divider>
+    <div class="settings__group__fields">
+      <div class="settings__group__fields__field">
+        <div>
+          <input
+            type="file"
+            accept=".json,application/json"
+            (change)="importSettings($event)"
+            hidden
+            #importInput
+          />
+          <p-button
+            label="Import"
+            variant="text"
+            icon="pi pi-download"
+            size="small"
+            (click)="importInput.click()"
+          />
+          <p-button
+            label="Export"
+            variant="text"
+            icon="pi pi-upload"
+            severity="secondary"
+            size="small"
+            (click)="settingsService.downloadSettingsAsJson()"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="footer">
