@@ -10,6 +10,7 @@ import { MessageBase } from '../../../core/models/message-base.model';
 import { FillTimeEntryRequest } from '../../../core/models/fill-time-entry-request.model';
 import { SettingsService } from './settings.service';
 import { DESCRIPTION_SELECTOR_TOKENS } from '../constants/description-selector.constant';
+import { getRoundedTimespanSeconds } from '../helpers/timespan.helper';
 
 @Injectable({
   providedIn: 'root',
@@ -73,7 +74,7 @@ export class ContentService {
         pbiNumber: parsedDescription.pbiNumber,
         description: parsedDescription.description,
         time: this.timespanPipe.transform(
-          timeEntryGroup.totalDuration,
+          this.getSecondsAsRounded(timeEntryGroup.totalDuration),
           'HH:mm',
         ),
       };
@@ -102,5 +103,17 @@ export class ContentService {
     );
 
     return new RegExp(selector);
+  }
+
+  private getSecondsAsRounded(seconds: number): number {
+    const roundingTime = this.settingsService.currentSettings?.roundingTime;
+    const roundingDirection =
+      this.settingsService.currentSettings?.roundingDirection;
+
+    if (!roundingTime || !roundingDirection) {
+      throw new Error('Rounding settings are not correctly configured');
+    }
+
+    return getRoundedTimespanSeconds(seconds, roundingTime, roundingDirection);
   }
 }

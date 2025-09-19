@@ -20,6 +20,49 @@
       </div>
     </div>
   </div>
+
+  <div class="settings__group">
+    <p-divider align="left" type="solid">Rounding</p-divider>
+    <div class="settings__group__fields">
+      <div class="settings__group__fields__field">
+        <div class="settings__group__fields__field__label">
+          <label for="roundingTime">Rounding Time</label>
+          <i
+            class="pi pi-info-circle"
+            pTooltip="Time to which the entry duration will be rounded."
+            tooltipPosition="top"
+          ></i>
+        </div>
+        <p-selectbutton
+          [options]="RoundingTimeOptions"
+          [formControl]="settingsForm.controls.roundingTime"
+          optionLabel="label"
+          optionValue="value"
+          aria-labelledby="basic"
+          size="small"
+        />
+      </div>
+
+      <div class="settings__group__fields__field">
+        <div class="settings__group__fields__field__label">
+          <label for="roundingDirection">Rounding Direction</label>
+          <i
+            class="pi pi-info-circle"
+            pTooltip="Direction to which the entry duration will be rounded."
+            tooltipPosition="top"
+          ></i>
+        </div>
+        <p-selectbutton
+          [options]="RoundingDirectionOptions"
+          [formControl]="settingsForm.controls.roundingDirection"
+          optionLabel="label"
+          optionValue="value"
+          aria-labelledby="basic"
+          size="small"
+        />
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="footer">

@@ -14,6 +14,11 @@ import { TooltipModule } from 'primeng/tooltip';
 import { DESCRIPTION_SELECTOR_TOKENS } from '../../../../constants/description-selector.constant';
 import { BehaviorSubject } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
+import { RoundingTime } from '../../../../enums/rounding-time.enum';
+import { RoundingDirection } from '../../../../enums/rounding-direction.enum';
+import { ROUNDING_TIME_LABELS } from '../../../../constants/rounding-time-labels.constant';
+import { ROUNDING_DIRECTION_LABELS } from '../../../../constants/rounding-direction-labels.constant';
+import { SelectButton } from 'primeng/selectbutton';
 
 @Component({
   selector: 'app-settings',
@@ -24,16 +29,26 @@ import { AsyncPipe } from '@angular/common';
     ButtonModule,
     TooltipModule,
     AsyncPipe,
+    SelectButton,
   ],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })
 export class Settings implements OnInit {
   protected readonly settingsForm = new FormGroup({
+    // General
     descriptionSelector: new FormControl<string | null>(null, [
       Validators.pattern(
         `^.*${DESCRIPTION_SELECTOR_TOKENS.PBI}.+${DESCRIPTION_SELECTOR_TOKENS.DESCRIPTION}.*$|^.*${DESCRIPTION_SELECTOR_TOKENS.DESCRIPTION}.+${DESCRIPTION_SELECTOR_TOKENS.PBI}.*$`,
       ),
+    ]),
+
+    // Rounding
+    roundingTime: new FormControl<RoundingTime | null>(null, [
+      Validators.required,
+    ]),
+    roundingDirection: new FormControl<RoundingDirection | null>(null, [
+      Validators.required,
     ]),
   });
 
@@ -67,8 +82,27 @@ export class Settings implements OnInit {
     }
 
     this.settingsService.updateSettings({
+      // General
       descriptionSelector: this.settingsForm.value.descriptionSelector!,
+
+      // Rounding
+      roundingTime: this.settingsForm.value.roundingTime!,
+      roundingDirection: this.settingsForm.value.roundingDirection!,
     });
     this._isUnsaved$.next(false);
   }
+
+  protected readonly RoundingTimeOptions = Object.values(RoundingTime).map(
+    (option) => ({
+      label: ROUNDING_TIME_LABELS[option],
+      value: option,
+    }),
+  );
+
+  protected readonly RoundingDirectionOptions = Object.values(
+    RoundingDirection,
+  ).map((option) => ({
+    label: ROUNDING_DIRECTION_LABELS[option],
+    value: option,
+  }));
 }

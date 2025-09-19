@@ -1,9 +1,16 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { PopupSettings } from '../models/popup-settings.model';
+import { RoundingTime } from '../enums/rounding-time.enum';
+import { RoundingDirection } from '../enums/rounding-direction.enum';
 
 const DEFAULT_SETTINGS: PopupSettings = {
+  // General
   descriptionSelector: '{pbi} - {description}',
+
+  // Rounding
+  roundingTime: RoundingTime.FiveMinutes,
+  roundingDirection: RoundingDirection.Nearest,
 };
 
 @Injectable({
