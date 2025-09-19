@@ -27,7 +27,8 @@ jobs:
 
       - name: Create release asset
         run: |
-          zip -r ${{ github.event.release.tag_name }}.zip dist/extension/browser
+          cd dist/extension
+          zip -r ${{ github.event.release.tag_name }}.zip" browser
 
       - name: Upload release asset
         env:
