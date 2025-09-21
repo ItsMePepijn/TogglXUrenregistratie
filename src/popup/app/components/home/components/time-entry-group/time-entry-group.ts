@@ -18,6 +18,7 @@ import { parseDescription } from '../../../../helpers/description-parser.helper'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SettingsService } from '../../../../services/settings.service';
 import { parseDescriptionSelectrorToRegex } from '../../../../helpers/description-selector-parser';
+import { PrimeIcons } from 'primeng/api';
 
 interface Vm {
   group: TimeEntryGroup | null;
@@ -82,4 +83,6 @@ export class TimeEntryGroupComponent implements OnInit {
 
     await this.contentService.fillTimeEntryGroup(group);
   }
+
+  protected readonly PrimeIcons = PrimeIcons;
 }

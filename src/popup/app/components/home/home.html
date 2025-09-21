@@ -22,16 +22,19 @@
         } @else {
           <app-message
             message="No time entries found for the selected date."
-            icon="pi pi-info-circle"
+            [icon]="PrimeIcons.INFO_CIRCLE"
           />
         }
       } @else if (vm.selectedDate == null) {
         <app-message
           message="Please select a date to view time entries."
-          icon="pi pi-clock"
+          [icon]="PrimeIcons.CLOCK"
         />
       } @else if (vm.error) {
-        <app-message [message]="vm.error" icon="pi pi-exclamation-circle" />
+        <app-message
+          [message]="vm.error"
+          [icon]="PrimeIcons.EXCLAMATION_CIRCLE"
+        />
       }
     }
   </div>

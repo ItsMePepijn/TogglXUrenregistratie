@@ -5,7 +5,7 @@
     @if (vm.useToken) {
       <p-floatlabel variant="on">
         <p-iconfield>
-          <p-inputicon class="pi pi-lock" />
+          <p-inputicon [class]="PrimeIcons.LOCK" />
           <input
             pInputText
             id="token"
@@ -25,7 +25,7 @@
     } @else {
       <p-floatlabel variant="on">
         <p-iconfield>
-          <p-inputicon class="pi pi-envelope" />
+          <p-inputicon [class]="PrimeIcons.ENVELOPE" />
           <input
             pInputText
             id="email"
@@ -38,7 +38,7 @@
 
       <p-floatlabel variant="on">
         <p-iconfield>
-          <p-inputicon class="pi pi-lock" />
+          <p-inputicon [class]="PrimeIcons.LOCK" />
           <input
             pInputText
             id="password"

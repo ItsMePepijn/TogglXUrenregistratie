@@ -5,16 +5,16 @@
         <ng-template #toggleicon let-active="active">
           <div class="item-icon">
             <p-button
-              icon="pi pi-save"
+              [icon]="PrimeIcons.SAVE"
               size="small"
               outlined
               (click)="handleSave($event, vm.group)"
             />
             <p-badge [value]="vm.group.totalDuration | timespan: 'HH:mm:ss'" />
             @if (active) {
-              <i class="pi pi-chevron-up"></i>
+              <i [class]="PrimeIcons.CHEVRON_UP"></i>
             } @else {
-              <i class="pi pi-chevron-down"></i>
+              <i [class]="PrimeIcons.CHEVRON_DOWN"></i>
             }
           </div>
         </ng-template>

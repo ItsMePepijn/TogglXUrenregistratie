@@ -6,7 +6,7 @@
         <div class="settings__group__fields__field__label">
           <label for="descriptionSelector">Description Selector</label>
           <i
-            class="pi pi-info-circle"
+            [class]="PrimeIcons.INFO_CIRCLE"
             pTooltip="Must contain both {pbi} and {description} tokens with at least one character between them. It may also contain regex. Example: '{pbi} - {description}' or '{description} {pbi}'"
             tooltipPosition="top"
           ></i>
@@ -28,7 +28,7 @@
         <div class="settings__group__fields__field__label">
           <label for="roundingTime">Rounding Time</label>
           <i
-            class="pi pi-info-circle"
+            [class]="PrimeIcons.INFO_CIRCLE"
             pTooltip="Time to which the entry duration will be rounded."
             tooltipPosition="top"
           ></i>
@@ -47,7 +47,7 @@
         <div class="settings__group__fields__field__label">
           <label for="roundingDirection">Rounding Direction</label>
           <i
-            class="pi pi-info-circle"
+            [class]="PrimeIcons.INFO_CIRCLE"
             pTooltip="Direction to which the entry duration will be rounded."
             tooltipPosition="top"
           ></i>
@@ -79,14 +79,14 @@
           <p-button
             label="Import"
             variant="text"
-            icon="pi pi-download"
+            [icon]="PrimeIcons.DOWNLOAD"
             size="small"
             (click)="importInput.click()"
           />
           <p-button
             label="Export"
             variant="text"
-            icon="pi pi-upload"
+            [icon]="PrimeIcons.UPLOAD"
             severity="secondary"
             size="small"
             (click)="settingsService.downloadSettingsAsJson()"

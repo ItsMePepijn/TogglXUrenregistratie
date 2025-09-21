@@ -19,7 +19,7 @@ import { RoundingDirection } from '../../../../enums/rounding-direction.enum';
 import { ROUNDING_TIME_LABELS } from '../../../../constants/rounding-time-labels.constant';
 import { ROUNDING_DIRECTION_LABELS } from '../../../../constants/rounding-direction-labels.constant';
 import { SelectButton } from 'primeng/selectbutton';
-import { MessageService } from 'primeng/api';
+import { MessageService, PrimeIcons } from 'primeng/api';
 
 @Component({
   selector: 'app-settings',
@@ -140,4 +140,6 @@ export class Settings implements OnInit {
 
     input.value = '';
   }
+
+  protected readonly PrimeIcons = PrimeIcons;
 }

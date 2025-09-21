@@ -25,6 +25,7 @@ import {
 } from '../../models/time-entry-group.model';
 import { TimeEntryGroupComponent } from './components/time-entry-group/time-entry-group';
 import { Message } from './components/message/message';
+import { PrimeIcons } from 'primeng/api';
 
 interface Vm {
   groups: TimeEntryGroup[] | null;
@@ -146,4 +147,6 @@ export class Home implements OnInit {
       ? null
       : items.reduce((total, entry) => total + entry.duration, 0);
   }
+
+  protected readonly PrimeIcons = PrimeIcons;
 }

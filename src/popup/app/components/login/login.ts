@@ -28,6 +28,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { PrimeIcons } from 'primeng/api';
 
 interface Vm {
   loginError: string | null;
@@ -142,4 +143,6 @@ export class Login implements OnInit {
         this._isLoading$.next(false);
       });
   }
+
+  protected readonly PrimeIcons = PrimeIcons;
 }

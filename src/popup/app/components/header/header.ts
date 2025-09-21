@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { UserService } from '../../services/user.service';
 import { MenuModule } from 'primeng/menu';
 import { ButtonModule } from 'primeng/button';
-import { MenuItem } from 'primeng/api';
+import { MenuItem, PrimeIcons } from 'primeng/api';
 import { AsyncPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { DrawerModule } from 'primeng/drawer';
@@ -31,14 +31,14 @@ export class Header {
         items: [
           {
             label: 'Settings',
-            icon: 'pi pi-cog',
+            icon: PrimeIcons.COG,
             command: () => {
               this.settingsIsOpen = true;
             },
           },
           {
             label: 'Logout',
-            icon: 'pi pi-sign-out',
+            icon: PrimeIcons.SIGN_OUT,
             command: () => {
               userService.logout();
               route.navigate(['/login']);
@@ -48,4 +48,6 @@ export class Header {
       },
     ];
   }
+
+  protected readonly PrimeIcons = PrimeIcons;
 }
