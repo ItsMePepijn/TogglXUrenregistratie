@@ -1,16 +1,15 @@
 import { Component, DestroyRef, OnInit } from '@angular/core';
 import { UserService } from '../../services/user.service';
-import { Router } from '@angular/router';
 import { ContentService } from '../../services/content.service';
 import { AsyncPipe, DatePipe } from '@angular/common';
 import {
   BehaviorSubject,
+  combineLatest,
   debounceTime,
   distinctUntilChanged,
   filter,
   map,
   Observable,
-  of,
   switchMap,
   tap,
 } from 'rxjs';
@@ -26,6 +25,14 @@ import {
 } from '../../models/time-entry-group.model';
 import { TimeEntryGroupComponent } from './components/time-entry-group/time-entry-group';
 import { Message } from './components/message/message';
+
+interface Vm {
+  groups: TimeEntryGroup[] | null;
+  totalDuration: number | null;
+  selectedDate: Date | null;
+  isLoading: boolean;
+  error: string | null;
+}
 
 @Component({
   selector: 'app-home',
@@ -46,25 +53,17 @@ export class Home implements OnInit {
   private readonly _timeEntries$ = new BehaviorSubject<TimeEntry[] | null>(
     null,
   );
+  private readonly _selectedDate$ = new BehaviorSubject<Date | null>(null);
+  private readonly _isLoading$ = new BehaviorSubject<boolean>(true);
+  private readonly _error$ = new BehaviorSubject<string | null>(null);
 
-  protected readonly timeEntryGroups$: Observable<TimeEntryGroup[] | null> =
-    this._timeEntries$.pipe(map(this.mapItemsToGroups));
-
-  protected readonly totalDuration$: Observable<number | null> =
-    this._timeEntries$.pipe(
-      map((items) => {
-        if (!items) {
-          return null;
-        }
-        return items.reduce((total, entry) => total + entry.duration, 0);
-      }),
-    );
-
-  private readonly _noDateSelected$ = new BehaviorSubject<boolean>(false);
-  protected readonly noDateSelected$ = this._noDateSelected$.asObservable();
-
-  protected readonly isLoading$ = new BehaviorSubject<boolean>(true);
-  protected readonly error$ = new BehaviorSubject<string | null>(null);
+  protected readonly Vm$: Observable<Vm> = combineLatest({
+    groups: this._timeEntries$.pipe(map(this.mapItemsToGroups)),
+    totalDuration: this._timeEntries$.pipe(map(this.mapItemsToTotalDuration)),
+    selectedDate: this._selectedDate$,
+    isLoading: this._isLoading$,
+    error: this._error$,
+  });
 
   constructor(
     protected readonly contentService: ContentService,
@@ -80,12 +79,12 @@ export class Home implements OnInit {
         debounceTime(50),
         tap((date) => {
           if (date == null) {
-            this.isLoading$.next(false);
+            this._isLoading$.next(false);
           }
         }),
         filter((date) => date !== null),
         tap(() => {
-          this.isLoading$.next(true);
+          this._isLoading$.next(true);
         }),
         switchMap((selectedDate) => {
           return this.userService.getMyTimeEntriesForDate(selectedDate);
@@ -93,24 +92,21 @@ export class Home implements OnInit {
         filter((result) => result !== null),
       )
       .subscribe((result) => {
-        this.isLoading$.next(false);
+        this._isLoading$.next(false);
         if (result.success) {
           this._timeEntries$.next(result.entries);
         } else {
           this._timeEntries$.next(null);
           if (result.error) {
-            this.error$.next(result.error);
+            this._error$.next(result.error);
           }
         }
       });
 
     this.contentService.selectedDate$
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        map((date) => date == null),
-      )
-      .subscribe((dateIsSelected) => {
-        this._noDateSelected$.next(dateIsSelected);
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((selectedDate) => {
+        this._selectedDate$.next(selectedDate);
       });
   }
 
@@ -143,5 +139,11 @@ export class Home implements OnInit {
       }
     });
     return grouped;
+  }
+
+  private mapItemsToTotalDuration(items: TimeEntry[] | null): number | null {
+    return items == null
+      ? null
+      : items.reduce((total, entry) => total + entry.duration, 0);
   }
 }

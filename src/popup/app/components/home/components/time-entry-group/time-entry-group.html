@@ -1,42 +1,44 @@
-@if (group$ | async; as group) {
-  <p-accordion-panel [value]="index" [disabled]="!!(groupIsInValid$ | async)">
-    <p-accordion-header>
-      <ng-template #toggleicon let-active="active">
-        <div class="item-icon">
-          <p-button
-            icon="pi pi-save"
-            size="small"
-            outlined
-            (click)="handleSave($event, group)"
-          />
-          <p-badge [value]="group.totalDuration | timespan: 'HH:mm:ss'" />
-          @if (active) {
-            <i class="pi pi-chevron-up"></i>
-          } @else {
-            <i class="pi pi-chevron-down"></i>
+@if (Vm$ | async; as vm) {
+  @if (vm.group != null) {
+    <p-accordion-panel [value]="index" [disabled]="!vm.groupIsValid">
+      <p-accordion-header>
+        <ng-template #toggleicon let-active="active">
+          <div class="item-icon">
+            <p-button
+              icon="pi pi-save"
+              size="small"
+              outlined
+              (click)="handleSave($event, vm.group)"
+            />
+            <p-badge [value]="vm.group.totalDuration | timespan: 'HH:mm:ss'" />
+            @if (active) {
+              <i class="pi pi-chevron-up"></i>
+            } @else {
+              <i class="pi pi-chevron-down"></i>
+            }
+          </div>
+        </ng-template>
+
+        <div class="item-description">
+          {{ vm.group.description }}
+          @if (vm.group.projectName) {
+            <p-badge
+              [value]="vm.group.projectName"
+              badgeSize="small"
+              [style.backgroundColor]="vm.group.projectColor"
+            />
           }
         </div>
-      </ng-template>
-
-      <div class="item-description">
-        {{ group.description }}
-        @if (group.projectName) {
-          <p-badge
-            [value]="group.projectName"
-            badgeSize="small"
-            [style.backgroundColor]="group.projectColor"
-          />
-        }
-      </div>
-    </p-accordion-header>
-    <p-accordion-content>
-      <ul>
-        @for (entry of group.entries; track entry.id) {
-          <li>
-            {{ entry.duration | timespan: "HH:mm:ss" }}
-          </li>
-        }
-      </ul>
-    </p-accordion-content>
-  </p-accordion-panel>
+      </p-accordion-header>
+      <p-accordion-content>
+        <ul>
+          @for (entry of vm.group.entries; track entry.id) {
+            <li>
+              {{ entry.duration | timespan: "HH:mm:ss" }}
+            </li>
+          }
+        </ul>
+      </p-accordion-content>
+    </p-accordion-panel>
+  }
 }

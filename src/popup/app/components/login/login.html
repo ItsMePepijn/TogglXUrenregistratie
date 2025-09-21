@@ -1,70 +1,72 @@
 <h2>Please enter your credentials</h2>
 
-<form [formGroup]="loginForm" (ngSubmit)="login()">
-  @if (useToken$ | async) {
-    <p-floatlabel variant="on">
-      <p-iconfield>
-        <p-inputicon class="pi pi-lock" />
-        <input
-          pInputText
-          id="token"
-          [formControl]="loginForm.controls.token"
-          type="password"
-        />
-        <label for="token">Token</label>
-      </p-iconfield>
-    </p-floatlabel>
+@if (Vm$ | async; as vm) {
+  <form [formGroup]="loginForm" (ngSubmit)="login()">
+    @if (vm.useToken) {
+      <p-floatlabel variant="on">
+        <p-iconfield>
+          <p-inputicon class="pi pi-lock" />
+          <input
+            pInputText
+            id="token"
+            [formControl]="loginForm.controls.token"
+            type="password"
+          />
+          <label for="token">Token</label>
+        </p-iconfield>
+      </p-floatlabel>
+
+      <p-button
+        label="Use credentials"
+        link
+        size="small"
+        (click)="setUseToken(false)"
+      />
+    } @else {
+      <p-floatlabel variant="on">
+        <p-iconfield>
+          <p-inputicon class="pi pi-envelope" />
+          <input
+            pInputText
+            id="email"
+            [formControl]="loginForm.controls.email"
+            type="email"
+          />
+          <label for="email">Email</label>
+        </p-iconfield>
+      </p-floatlabel>
+
+      <p-floatlabel variant="on">
+        <p-iconfield>
+          <p-inputicon class="pi pi-lock" />
+          <input
+            pInputText
+            id="password"
+            [formControl]="loginForm.controls.password"
+            type="password"
+          />
+          <label for="password">Password</label>
+        </p-iconfield>
+      </p-floatlabel>
+
+      <p-button
+        label="Use Toggl token"
+        link
+        size="small"
+        (click)="setUseToken(true)"
+      />
+    }
+
+    @if (vm.loginError) {
+      <p-message severity="error" [text]="vm.loginError" />
+    }
 
     <p-button
-      label="Use credentials"
-      link
-      size="small"
-      (click)="setUseToken(false)"
+      type="submit"
+      label="Sign in"
+      [disabled]="loginForm.invalid"
+      [loading]="vm.isLoading"
+      fluid
     />
-  } @else {
-    <p-floatlabel variant="on">
-      <p-iconfield>
-        <p-inputicon class="pi pi-envelope" />
-        <input
-          pInputText
-          id="email"
-          [formControl]="loginForm.controls.email"
-          type="email"
-        />
-        <label for="email">Email</label>
-      </p-iconfield>
-    </p-floatlabel>
-
-    <p-floatlabel variant="on">
-      <p-iconfield>
-        <p-inputicon class="pi pi-lock" />
-        <input
-          pInputText
-          id="password"
-          [formControl]="loginForm.controls.password"
-          type="password"
-        />
-        <label for="password">Password</label>
-      </p-iconfield>
-    </p-floatlabel>
-
-    <p-button
-      label="Use Toggl token"
-      link
-      size="small"
-      (click)="setUseToken(true)"
-    />
-  }
-
-  @if (loginError$ | async; as error) {
-    <p-message severity="error" [text]="error" />
-  }
-
-  <p-button
-    type="submit"
-    label="Sign in"
-    [disabled]="loginForm.invalid"
-    [loading]="isLoading$ | async"
-    fluid
-  />
-</form>
+  </form>
+}

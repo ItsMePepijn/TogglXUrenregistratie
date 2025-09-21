@@ -8,7 +8,16 @@ import {
 } from '@angular/forms';
 import { UserService } from '../../services/user.service';
 import { Router } from '@angular/router';
-import { BehaviorSubject, filter, map, switchMap, take, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  filter,
+  map,
+  Observable,
+  switchMap,
+  take,
+  tap,
+} from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -19,6 +28,12 @@ import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+interface Vm {
+  loginError: string | null;
+  isLoading: boolean;
+  useToken: boolean;
+}
 
 @Component({
   selector: 'app-login',
@@ -46,13 +61,14 @@ export class Login implements OnInit {
   });
 
   private readonly _loginError$ = new BehaviorSubject<string | null>(null);
-  protected readonly loginError$ = this._loginError$.asObservable();
-
   private readonly _isLoading$ = new BehaviorSubject<boolean>(false);
-  protected readonly isLoading$ = this._isLoading$.asObservable();
-
   private readonly _useToken$ = new BehaviorSubject<boolean>(false);
-  protected readonly useToken$ = this._useToken$.asObservable();
+
+  protected readonly Vm$: Observable<Vm> = combineLatest({
+    loginError: this._loginError$,
+    isLoading: this._isLoading$,
+    useToken: this._useToken$,
+  });
 
   constructor(
     private readonly userService: UserService,
@@ -61,7 +77,7 @@ export class Login implements OnInit {
   ) {}
 
   public ngOnInit() {
-    this.useToken$
+    this._useToken$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((useToken) => {
         if (useToken) {
@@ -91,7 +107,7 @@ export class Login implements OnInit {
       return;
     }
 
-    this.useToken$
+    this._useToken$
       .pipe(
         take(1),
         map((useToken) => {

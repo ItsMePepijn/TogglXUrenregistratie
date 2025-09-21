@@ -2,7 +2,14 @@ import { AsyncPipe } from '@angular/common';
 import { Component, DestroyRef, Input, OnInit } from '@angular/core';
 import { AccordionModule } from 'primeng/accordion';
 import { BadgeModule } from 'primeng/badge';
-import { BehaviorSubject, combineLatestWith, filter, map } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  combineLatestWith,
+  filter,
+  map,
+  Observable,
+} from 'rxjs';
 import { TimespanPipe } from '../../../../pipes/timespan.pipe';
 import { TimeEntryGroup } from '../../../../models/time-entry-group.model';
 import { ContentService } from '../../../../services/content.service';
@@ -11,6 +18,11 @@ import { parseDescription } from '../../../../helpers/description-parser.helper'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SettingsService } from '../../../../services/settings.service';
 import { parseDescriptionSelectrorToRegex } from '../../../../helpers/description-selector-parser';
+
+interface Vm {
+  group: TimeEntryGroup | null;
+  groupIsValid: boolean;
+}
 
 @Component({
   selector: 'app-time-entry-group',
@@ -25,15 +37,18 @@ import { parseDescriptionSelectrorToRegex } from '../../../../helpers/descriptio
   styleUrl: './time-entry-group.scss',
 })
 export class TimeEntryGroupComponent implements OnInit {
-  protected readonly group$ = new BehaviorSubject<TimeEntryGroup | null>(null);
   @Input({ required: true }) set group(value: TimeEntryGroup) {
-    this.group$.next(value);
+    this._group$.next(value);
   }
-
   @Input({ required: true }) index!: number;
 
-  protected readonly _groupIsInValid$ = new BehaviorSubject<boolean>(false);
-  protected readonly groupIsInValid$ = this._groupIsInValid$.asObservable();
+  private readonly _group$ = new BehaviorSubject<TimeEntryGroup | null>(null);
+  private readonly _groupIsValid$ = new BehaviorSubject<boolean>(false);
+
+  protected readonly Vm$: Observable<Vm> = combineLatest({
+    group: this._group$,
+    groupIsValid: this._groupIsValid$,
+  });
 
   constructor(
     protected readonly contentService: ContentService,
@@ -42,21 +57,21 @@ export class TimeEntryGroupComponent implements OnInit {
   ) {}
 
   public ngOnInit(): void {
-    this.group$
+    this._group$
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         combineLatestWith(this.settingsService.settings$),
         filter(([group, settings]) => group != null && settings != null),
         map(([group, settings]) =>
           group?.description == null
-            ? true
+            ? false
             : parseDescription(
                 group.description,
                 parseDescriptionSelectrorToRegex(settings!.descriptionSelector),
-              ) == null,
+              ) != null,
         ),
       )
-      .subscribe((isInValid) => this._groupIsInValid$.next(isInValid));
+      .subscribe((isValid) => this._groupIsValid$.next(isValid));
   }
 
   protected async handleSave(
