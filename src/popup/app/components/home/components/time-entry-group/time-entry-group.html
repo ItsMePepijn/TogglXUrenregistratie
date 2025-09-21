@@ -1,15 +1,25 @@
 @if (Vm$ | async; as vm) {
   @if (vm.group != null) {
-    <p-accordion-panel [value]="index" [disabled]="!vm.groupIsValid">
+    <p-accordion-panel [value]="index">
       <p-accordion-header>
         <ng-template #toggleicon let-active="active">
           <div class="item-icon">
-            <p-button
-              [icon]="PrimeIcons.SAVE"
-              size="small"
-              outlined
-              (click)="handleSave($event, vm.group)"
-            />
+            @if (vm.groupIsValid) {
+              <p-button
+                [icon]="PrimeIcons.SAVE"
+                size="small"
+                outlined
+                (click)="handleSave($event, vm.group)"
+                pTooltip="Save entry to Urenregistratie"
+                tooltipPosition="top"
+              />
+            } @else {
+              <i
+                [class]="PrimeIcons.EXCLAMATION_TRIANGLE + ' invalid-entry'"
+                pTooltip="Could not determine pbi/description. This entry can not be saved. Please make sure the configured selector is correct."
+                tooltipPosition="top"
+              ></i>
+            }
             <p-badge [value]="vm.group.totalDuration | timespan: 'HH:mm:ss'" />
             @if (active) {
               <i [class]="PrimeIcons.CHEVRON_UP"></i>

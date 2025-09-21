@@ -22,3 +22,7 @@ p-accordion-header {
   align-items: center;
   gap: 0.5rem;
 }
+
+.invalid-entry {
+  color: var(--p-amber-400);
+}

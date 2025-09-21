@@ -19,6 +19,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SettingsService } from '../../../../services/settings.service';
 import { parseDescriptionSelectrorToRegex } from '../../../../helpers/description-selector-parser';
 import { PrimeIcons } from 'primeng/api';
+import { TooltipModule } from 'primeng/tooltip';
 
 interface Vm {
   group: TimeEntryGroup | null;
@@ -33,6 +34,7 @@ interface Vm {
     AsyncPipe,
     TimespanPipe,
     ButtonModule,
+    TooltipModule,
   ],
   templateUrl: './time-entry-group.html',
   styleUrl: './time-entry-group.scss',
