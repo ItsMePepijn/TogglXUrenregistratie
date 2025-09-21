@@ -1,13 +1,15 @@
+import { ParsedDescriptionSelector } from '../models/parsed-description-selector.model';
+
 export function parseDescription(
   description: string,
-  selectorRegex: RegExp,
+  selector: ParsedDescriptionSelector,
 ): { pbiNumber: string; description: string } | null {
-  const match = description.match(selectorRegex);
+  const match = description.match(selector.regex);
 
   return !match || match.length < 3
     ? null
     : {
-        pbiNumber: match[1],
-        description: match[2].trim(),
+        pbiNumber: match[selector.pbiGroupIndex],
+        description: match[selector.descriptionGroupIndex].trim(),
       };
 }
