@@ -69,7 +69,6 @@ export class Home implements OnInit {
   constructor(
     protected readonly contentService: ContentService,
     private readonly userService: UserService,
-    private readonly router: Router,
     private readonly destroyRef: DestroyRef,
   ) {}
 
@@ -113,11 +112,6 @@ export class Home implements OnInit {
       .subscribe((dateIsSelected) => {
         this._noDateSelected$.next(dateIsSelected);
       });
-  }
-
-  protected logout() {
-    this.userService.logout();
-    this.router.navigate(['/login']);
   }
 
   private mapItemsToGroups(items: TimeEntry[] | null): TimeEntryGroup[] | null {

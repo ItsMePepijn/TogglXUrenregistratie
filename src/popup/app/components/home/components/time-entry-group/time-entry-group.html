@@ -1,5 +1,5 @@
 @if (group$ | async; as group) {
-  <p-accordion-panel [value]="index">
+  <p-accordion-panel [value]="index" [disabled]="!!(groupIsInValid$ | async)">
     <p-accordion-header>
       <ng-template #toggleicon let-active="active">
         <div class="item-icon">

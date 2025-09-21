@@ -11,6 +11,7 @@ import { FillTimeEntryRequest } from '../../../core/models/fill-time-entry-reque
 import { SettingsService } from './settings.service';
 import { DESCRIPTION_SELECTOR_TOKENS } from '../constants/description-selector.constant';
 import { getRoundedTimespanSeconds } from '../helpers/timespan.helper';
+import { parseDescriptionSelectrorToRegex } from '../helpers/description-selector-parser';
 
 @Injectable({
   providedIn: 'root',
@@ -60,13 +61,25 @@ export class ContentService {
     timeEntryGroup: TimeEntryGroup,
   ): Promise<void> {
     try {
+      if (!timeEntryGroup.description) {
+        console.warn('Time entry group description is null');
+        return;
+      }
+
+      const selector =
+        this.settingsService.currentSettings?.descriptionSelector;
+      if (!selector) {
+        console.warn('Description selector is not set in settings');
+        return;
+      }
+
       const parsedDescription = parseDescription(
         timeEntryGroup.description,
-        this.getConfiguredDescriptionSelectorAsRegex(),
+        parseDescriptionSelectrorToRegex(selector),
       );
 
-      if (!parsedDescription?.pbiNumber || !parsedDescription?.description) {
-        console.warn('Parsed description is incomplete:', parsedDescription);
+      if (!parsedDescription) {
+        console.warn('Failed to parse description: ', parsedDescription);
         return;
       }
 
@@ -88,21 +101,6 @@ export class ContentService {
     } catch (error) {
       console.error('Error filling time entry group in content script:', error);
     }
-  }
-
-  private getConfiguredDescriptionSelectorAsRegex(): RegExp {
-    let selector = this.settingsService.currentSettings?.descriptionSelector;
-    if (!selector) {
-      throw new Error('Description selector is not configured');
-    }
-
-    selector = selector.replace(DESCRIPTION_SELECTOR_TOKENS.PBI, '(\\d+)');
-    selector = selector.replace(
-      DESCRIPTION_SELECTOR_TOKENS.DESCRIPTION,
-      '(.*)',
-    );
-
-    return new RegExp(selector);
   }
 
   private getSecondsAsRounded(seconds: number): number {
