@@ -1,4 +1,4 @@
-import { MessageBase } from '../models/message-base.model';
+import { MessageBase } from '../models/messages/message-base.model';
 
 export class ExtensionMessenger {
   public static async sendMessageToContent<TReq extends MessageBase, TResp>(

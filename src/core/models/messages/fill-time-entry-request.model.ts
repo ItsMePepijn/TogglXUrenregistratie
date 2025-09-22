@@ -5,7 +5,7 @@ export interface FillTimeEntryRequest extends MessageBase {
 }
 
 export interface FillTimeEntryRequestPayload {
-  pbiNumber: string;
+  pbi: string;
   description: string;
   time: string;
 }

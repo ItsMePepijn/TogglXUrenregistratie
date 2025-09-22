@@ -4,6 +4,13 @@
       <p-accordion-header>
         <ng-template #toggleicon let-active="active">
           <div class="item-icon">
+            @if (vm.isSaved) {
+              <i
+                [class]="PrimeIcons.CHECK_SQUARE + ' saved-entry'"
+                pTooltip="A saved entry has been found matching this pbi and description"
+                tooltipPosition="top"
+              ></i>
+            }
             @if (vm.groupIsValid) {
               <p-button
                 [icon]="PrimeIcons.SAVE"

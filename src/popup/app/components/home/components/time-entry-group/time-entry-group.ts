@@ -2,28 +2,22 @@ import { AsyncPipe } from '@angular/common';
 import { Component, DestroyRef, Input, OnInit } from '@angular/core';
 import { AccordionModule } from 'primeng/accordion';
 import { BadgeModule } from 'primeng/badge';
-import {
-  BehaviorSubject,
-  combineLatest,
-  combineLatestWith,
-  filter,
-  map,
-  Observable,
-} from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, map, Observable } from 'rxjs';
 import { TimespanPipe } from '../../../../pipes/timespan.pipe';
 import { TimeEntryGroup } from '../../../../models/time-entry-group.model';
 import { ContentService } from '../../../../services/content.service';
 import { ButtonModule } from 'primeng/button';
-import { parseDescription } from '../../../../helpers/description-parser.helper';
+import { parseTogglDescription } from '../../../../helpers/toggl-description-parser.helper';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SettingsService } from '../../../../services/settings.service';
-import { parseDescriptionSelectrorToRegex } from '../../../../helpers/description-selector-parser';
+import { parseTogglDescriptionSelctorToRegex } from '../../../../helpers/toggl-description-selector-parser';
 import { PrimeIcons } from 'primeng/api';
 import { TooltipModule } from 'primeng/tooltip';
 
 interface Vm {
   group: TimeEntryGroup | null;
   groupIsValid: boolean;
+  isSaved: boolean;
 }
 
 @Component({
@@ -47,10 +41,12 @@ export class TimeEntryGroupComponent implements OnInit {
 
   private readonly _group$ = new BehaviorSubject<TimeEntryGroup | null>(null);
   private readonly _groupIsValid$ = new BehaviorSubject<boolean>(false);
+  private readonly _isSaved$ = new BehaviorSubject<boolean>(false);
 
   protected readonly Vm$: Observable<Vm> = combineLatest({
     group: this._group$,
     groupIsValid: this._groupIsValid$,
+    isSaved: this._isSaved$,
   });
 
   constructor(
@@ -60,21 +56,44 @@ export class TimeEntryGroupComponent implements OnInit {
   ) {}
 
   public ngOnInit(): void {
-    this._group$
+    combineLatest([
+      this._group$,
+      this.settingsService.settings$,
+      this.contentService.savedEntries$,
+    ])
       .pipe(
         takeUntilDestroyed(this.destroyRef),
-        combineLatestWith(this.settingsService.settings$),
         filter(([group, settings]) => group != null && settings != null),
-        map(([group, settings]) =>
-          group?.description == null
-            ? false
-            : parseDescription(
-                group.description,
-                parseDescriptionSelectrorToRegex(settings!.descriptionSelector),
-              ) != null,
-        ),
+        map(([group, settings, savedEntries]) => {
+          const parsedDescription =
+            group?.description == null
+              ? null
+              : parseTogglDescription(
+                  group.description,
+                  parseTogglDescriptionSelctorToRegex(
+                    settings!.descriptionSelector,
+                  ),
+                );
+
+          const isSaved =
+            parsedDescription != null &&
+            savedEntries != null &&
+            savedEntries.find(
+              (entry) =>
+                entry.description === parsedDescription.description &&
+                entry.pbi === parsedDescription.pbi,
+            ) != null;
+
+          return {
+            isValid: parsedDescription != null,
+            isSaved,
+          };
+        }),
       )
-      .subscribe((isValid) => this._groupIsValid$.next(isValid));
+      .subscribe(({ isValid, isSaved }) => {
+        this._groupIsValid$.next(isValid);
+        this._isSaved$.next(isSaved);
+      });
   }
 
   protected async handleSave(

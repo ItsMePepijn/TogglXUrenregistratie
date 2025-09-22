@@ -2,8 +2,10 @@ import { EXTENSION_MESSAGES } from '../core/constants/messages.constant';
 import {
   FillTimeEntryRequest,
   FillTimeEntryRequestPayload,
-} from '../core/models/fill-time-entry-request.model';
+} from '../core/models/messages/fill-time-entry-request.model';
 import { ExtensionMessenger } from '../core/helpers/extension-messager.helper';
+import { SavedEntry } from '../core/models/saved-entry.model';
+import { GetSavedEntriesRequest } from '../core/models/messages/get-saved-entries-request.model';
 
 const FORM_SELECTION_ID = 'createTimeRegistrationForm';
 const BASE_URL = window.location.origin;
@@ -19,6 +21,13 @@ ExtensionMessenger.startListeningToMsg<FillTimeEntryRequest>(
   EXTENSION_MESSAGES.POPUP_SOURCE.FILL_TIME_ENTRY,
   async (message) => {
     await fillTimeEntryGroup(message.payload);
+  },
+);
+
+ExtensionMessenger.startListeningToMsg<GetSavedEntriesRequest>(
+  EXTENSION_MESSAGES.POPUP_SOURCE.GET_SAVED_ENTRIES,
+  (message, sendResponse) => {
+    sendResponse(getSavedEntriesForDate(message.payload.date));
   },
 );
 
@@ -81,12 +90,12 @@ async function fillTimeEntryGroup(timeEntryGroup: FillTimeEntryRequestPayload) {
   }
 
   const resp = await fetch(
-    `${BASE_URL}/Client/ListActive?page=1&SearchTerm=%23${timeEntryGroup.pbiNumber}`,
+    `${BASE_URL}/Client/ListActive?page=1&SearchTerm=%23${timeEntryGroup.pbi}`,
   );
   const body = await resp.json();
   const firstItem = body[0].children[0];
 
-  const verifyDescriptionRegex = new RegExp(`#${timeEntryGroup.pbiNumber} -`);
+  const verifyDescriptionRegex = new RegExp(`#${timeEntryGroup.pbi} -`);
   if (!firstItem || !verifyDescriptionRegex.test(firstItem.text)) {
     console.warn('Description verification failed');
     return;
@@ -122,3 +131,37 @@ async function fillTimeEntryGroup(timeEntryGroup: FillTimeEntryRequestPayload) {
     console.warn('Save button not found');
   }
 }
+
+function getSavedEntriesForDate(date: string): SavedEntry[] | null {
+  const dayTab = document.getElementById(`day-tab-${date}`);
+  if (!dayTab) {
+    return null;
+  }
+
+  const entryButtons: NodeListOf<HTMLElement> = dayTab.querySelectorAll(
+    '.registration-list-popover',
+  );
+
+  return Array.from(entryButtons)
+    .map((button) => {
+      const description = button.dataset['content'];
+      const title = button.dataset['originalTitle'];
+
+      return { description, title };
+    })
+    .filter(
+      (entry) => entry.description != null && entry.title != null,
+    ) as SavedEntry[];
+}
+
+(() => {
+  const selectedDate = getSelectedDate();
+  if (!selectedDate) {
+    return;
+  }
+
+  ExtensionMessenger.sendMessageToRuntime({
+    type: EXTENSION_MESSAGES.CONTENT_SOURCE.SAVED_ENTRIES_CHANGED,
+    savedEntries: getSavedEntriesForDate(selectedDate),
+  });
+})();

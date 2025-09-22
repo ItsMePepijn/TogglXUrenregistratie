@@ -1,7 +1,7 @@
 import { DESCRIPTION_SELECTOR_TOKENS } from '../constants/description-selector.constant';
 import { ParsedDescriptionSelector } from '../models/parsed-description-selector.model';
 
-export function parseDescriptionSelectrorToRegex(
+export function parseTogglDescriptionSelctorToRegex(
   descriptionSelector: string,
 ): ParsedDescriptionSelector {
   const pbiPosition = descriptionSelector.indexOf(
