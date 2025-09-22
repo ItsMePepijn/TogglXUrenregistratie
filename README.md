@@ -2,6 +2,19 @@
 
 TogglXUrenregistratie is a chrome plugin designed to copy time entries from [TogglTrack](https://toggl.com/) into Covadis' [Urenregistratie](https://covadis-urenregistratie.azurewebsites.net/). The plugin will automatically pull and display all registered time entries from TogglTrack for the current selected date in Urenregistratie. To save a time entry group to Urenregistratie, simply press the save button and TogglXUrenregistratie will do the rest.
 
+## Roadmap
+
+### 0.1.0
+
+TODO:
+
+- Error handling for communication with content script. (Saving time entries mostly)
+- Handle rate limits
+
+### 1.0.0
+
+TODO: T.B.D
+
 ## Installation
 
 Installation guide will be added in the future.
