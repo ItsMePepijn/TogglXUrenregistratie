@@ -10,7 +10,7 @@ import { MessageBase } from '../../../core/models/messages/message-base.model';
 import { FillTimeEntryRequest } from '../../../core/models/messages/fill-time-entry-request.model';
 import { SettingsService } from './settings.service';
 import { getRoundedTimespanSeconds } from '../helpers/timespan.helper';
-import { parseTogglDescriptionSelctorToRegex } from '../helpers/toggl-description-selector-parser';
+import { parseTogglDescriptionSelctorToRegex } from '../helpers/toggl-description-selector-parser.helper';
 import { GetSavedEntriesRequest } from '../../../core/models/messages/get-saved-entries-request.model';
 import { SavedEntry } from '../../../core/models/saved-entry.model';
 import { parseUrenregistratieTitleToPbi } from '../helpers/urenregistratie-title-parser.helper';

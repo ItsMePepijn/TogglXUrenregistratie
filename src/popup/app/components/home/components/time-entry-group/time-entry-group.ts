@@ -10,7 +10,7 @@ import { ButtonModule } from 'primeng/button';
 import { parseTogglDescription } from '../../../../helpers/toggl-description-parser.helper';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SettingsService } from '../../../../services/settings.service';
-import { parseTogglDescriptionSelctorToRegex } from '../../../../helpers/toggl-description-selector-parser';
+import { parseTogglDescriptionSelctorToRegex } from '../../../../helpers/toggl-description-selector-parser.helper';
 import { PrimeIcons } from 'primeng/api';
 import { TooltipModule } from 'primeng/tooltip';
 
