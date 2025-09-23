@@ -2,6 +2,7 @@ import { EXTENSION_MESSAGES } from '../../core/constants/messages.constant';
 import { ExtensionMessenger } from '../../core/helpers/extension-messager.helper';
 import { FillTimeEntryRequest } from '../../core/models/messages/fill-time-entry-request.model';
 import { GetSavedEntriesRequest } from '../../core/models/messages/get-saved-entries-request.model';
+import { SavedEntry } from '../../core/models/saved-entry.model';
 import { getSelectedDate, publishSelectedDate } from '../helpers/date.helper';
 import {
   fillTimeEntryGroup,
@@ -17,14 +18,17 @@ export function startupHandler() {
     },
   );
 
-  ExtensionMessenger.startListeningToMsg<FillTimeEntryRequest>(
+  ExtensionMessenger.startListeningToMsg<FillTimeEntryRequest, void>(
     EXTENSION_MESSAGES.POPUP_SOURCE.FILL_TIME_ENTRY,
     async (message) => {
       await fillTimeEntryGroup(message.payload);
     },
   );
 
-  ExtensionMessenger.startListeningToMsg<GetSavedEntriesRequest>(
+  ExtensionMessenger.startListeningToMsg<
+    GetSavedEntriesRequest,
+    SavedEntry[] | null
+  >(
     EXTENSION_MESSAGES.POPUP_SOURCE.GET_SAVED_ENTRIES,
     (message, sendResponse) => {
       sendResponse(getSavedEntriesForDate(message.payload.date));

@@ -29,16 +29,16 @@ export class ExtensionMessenger {
     }
   }
 
-  public static startListeningToMsg<T extends MessageBase>(
+  public static startListeningToMsg<TReq extends MessageBase, TResp>(
     messageType: string,
     callback: (
-      message: T,
-      sendResponse: (response?: any) => void,
+      message: TReq,
+      sendResponse: (response: TResp) => void,
     ) => Promise<void> | void,
   ): void {
     chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
       if (message?.type === messageType) {
-        callback(message as T, sendResponse);
+        callback(message as TReq, sendResponse);
       }
 
       return true;

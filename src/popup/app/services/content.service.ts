@@ -86,7 +86,8 @@ export class ContentService {
 
   private initSelectedDateListener(): void {
     ExtensionMessenger.startListeningToMsg<
-      { selectedDate: string | null } & MessageBase
+      { selectedDate: string | null } & MessageBase,
+      void
     >(EXTENSION_MESSAGES.CONTENT_SOURCE.SELECTED_DATE_CHANGED, (message) => {
       const date = this.parsePossibleDate(message.selectedDate);
       this._selectedDate$.next(date);
@@ -183,7 +184,8 @@ export class ContentService {
 
   private initSavedEntriesListener(): void {
     ExtensionMessenger.startListeningToMsg<
-      { savedEntries: SavedEntry[] | null } & MessageBase
+      { savedEntries: SavedEntry[] | null } & MessageBase,
+      void
     >(EXTENSION_MESSAGES.CONTENT_SOURCE.SAVED_ENTRIES_CHANGED, (message) => {
       this._savedEntries$.next(message.savedEntries);
     });
