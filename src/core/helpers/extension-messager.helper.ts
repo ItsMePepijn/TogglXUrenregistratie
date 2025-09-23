@@ -36,9 +36,9 @@ export class ExtensionMessenger {
       sendResponse: (response?: any) => void,
     ) => Promise<void> | void,
   ): void {
-    chrome.runtime.onMessage.addListener(async (message, _, sendResponse) => {
+    chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
       if (message?.type === messageType) {
-        await callback(message as T, sendResponse);
+        callback(message as T, sendResponse);
       }
 
       return true;
