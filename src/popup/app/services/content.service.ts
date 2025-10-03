@@ -15,6 +15,8 @@ import { GetSavedEntriesRequest } from '../../../core/models/messages/get-saved-
 import { SavedEntry } from '../../../core/models/saved-entry.model';
 import { parseUrenregistratieTitleToPbi } from '../helpers/urenregistratie-title-parser.helper';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { SaveEntryResult } from '../../../core/models/save-entry-result.model';
+import { SAVE_ENTRY_RESULTS } from '../../../core/constants/save-entry-results.constant';
 
 @Injectable({
   providedIn: 'root',
@@ -100,18 +102,18 @@ export class ContentService {
 
   public async fillTimeEntryGroup(
     timeEntryGroup: TimeEntryGroup,
-  ): Promise<void> {
+  ): Promise<SaveEntryResult> {
     try {
       if (!timeEntryGroup.description) {
         console.warn('Time entry group description is null');
-        return;
+        return SAVE_ENTRY_RESULTS.NO_DESCRIPTION;
       }
 
       const selector =
         this.settingsService.currentSettings?.descriptionSelector;
       if (!selector) {
         console.warn('Description selector is not set in settings');
-        return;
+        return SAVE_ENTRY_RESULTS.NO_SELECTOR_SETTING;
       }
 
       const parsedDescription = parseTogglDescription(
@@ -120,8 +122,8 @@ export class ContentService {
       );
 
       if (!parsedDescription) {
-        console.warn('Failed to parse description: ', parsedDescription);
-        return;
+        console.warn('Failed to parse description');
+        return SAVE_ENTRY_RESULTS.DESCRIPTION_PARSING_FAILED;
       }
 
       const payload = {
@@ -133,14 +135,18 @@ export class ContentService {
         ),
       };
 
-      await ExtensionMessenger.sendMessageToContent<FillTimeEntryRequest, void>(
-        {
-          type: EXTENSION_MESSAGES.POPUP_SOURCE.FILL_TIME_ENTRY,
-          payload,
-        },
-      );
+      const result = await ExtensionMessenger.sendMessageToContent<
+        FillTimeEntryRequest,
+        SaveEntryResult
+      >({
+        type: EXTENSION_MESSAGES.POPUP_SOURCE.FILL_TIME_ENTRY,
+        payload,
+      });
+
+      return result ?? SAVE_ENTRY_RESULTS.FAILED;
     } catch (error) {
-      console.error('Error filling time entry group in content script:', error);
+      console.error('Error filling time entry group:', error);
+      return SAVE_ENTRY_RESULTS.FAILED;
     }
   }
 

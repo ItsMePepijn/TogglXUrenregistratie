@@ -11,7 +11,7 @@ import { parseTogglDescription } from '../../../../helpers/toggl-description-par
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SettingsService } from '../../../../services/settings.service';
 import { parseTogglDescriptionSelctorToRegex } from '../../../../helpers/toggl-description-selector-parser.helper';
-import { PrimeIcons } from 'primeng/api';
+import { MessageService, PrimeIcons } from 'primeng/api';
 import { TooltipModule } from 'primeng/tooltip';
 
 interface Vm {
@@ -53,6 +53,7 @@ export class TimeEntryGroupComponent implements OnInit {
     protected readonly contentService: ContentService,
     protected readonly settingsService: SettingsService,
     private readonly destroyRef: DestroyRef,
+    private readonly messageService: MessageService,
   ) {}
 
   public ngOnInit(): void {
@@ -102,7 +103,15 @@ export class TimeEntryGroupComponent implements OnInit {
   ): Promise<void> {
     event.stopPropagation();
 
-    await this.contentService.fillTimeEntryGroup(group);
+    const result = await this.contentService.fillTimeEntryGroup(group);
+    if (!result.success) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: result.errorMessage,
+        life: 4000,
+      });
+    }
   }
 
   protected readonly PrimeIcons = PrimeIcons;

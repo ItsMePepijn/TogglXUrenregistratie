@@ -8,7 +8,7 @@ TogglXUrenregistratie is a chrome plugin designed to copy time entries from [Tog
 
 TODO:
 
-- Error handling for communication with content script. (Saving time entries mostly)
+- Handle multiple returned pbi's
 - Handle rate limits
 
 ### 1.0.0
