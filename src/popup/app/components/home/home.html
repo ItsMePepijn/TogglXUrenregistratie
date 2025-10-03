@@ -10,7 +10,7 @@
 
   <div class="item-wrapper">
     @if (vm.isLoading) {
-      <p>Loading...</p>
+      <app-message [icon]="'pi-spin ' + PrimeIcons.SPINNER" />
     } @else {
       @if (vm.groups) {
         @if (vm.groups.length > 0) {

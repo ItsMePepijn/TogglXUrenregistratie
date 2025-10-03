@@ -7,6 +7,6 @@ import { Component, Input } from '@angular/core';
   styleUrl: './message.scss',
 })
 export class Message {
-  @Input({ required: true }) message: string = '';
-  @Input({ required: true }) icon: string = '';
+  @Input() message: string | null = null;
+  @Input({ required: true }) icon!: string;
 }

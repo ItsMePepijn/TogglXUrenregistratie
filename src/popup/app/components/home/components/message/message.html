@@ -1,2 +1,4 @@
 <i [class]="icon"></i>
-<h2>{{ message }}</h2>
+@if (message != null) {
+  <h2>{{ message }}</h2>
+}
