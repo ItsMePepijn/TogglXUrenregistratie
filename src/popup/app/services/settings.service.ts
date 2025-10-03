@@ -9,7 +9,7 @@ const DEFAULT_SETTINGS: PopupSettings = {
   descriptionSelector: '{pbi} - {description}',
 
   // Rounding
-  roundingTime: RoundingTime.FiveMinutes,
+  roundingTime: RoundingTime.Minute,
   roundingDirection: RoundingDirection.Nearest,
 };
 
