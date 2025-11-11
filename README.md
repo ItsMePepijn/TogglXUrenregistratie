@@ -32,7 +32,7 @@ The extension can be configured through the settings menu (accessible via the me
 
 ## Installation
 
-Currently the only way of installing the extension is using the unpacked version. Download your preferred version from the [releases](/releases) tab and unpack it. To install the unpacked extension, open chrome and navigate to extension settings, usually [chrome://extensions/](chrome://extensions/). Enable developer mode and click the `Load unpacked` button. Select the `/browser` directory. The extension is now loaded into the browser. You might need to refresh any open webpages for the extension to work correctly.
+Currently the only way of installing the extension is using the unpacked version. Download your preferred version from the releases tab and unpack it. To install the unpacked extension, open chrome and navigate to extension settings, usually [chrome://extensions/](chrome://extensions/). Enable developer mode and click the `Load unpacked` button. Select the `/browser` directory. The extension is now loaded into the browser. You might need to refresh any open webpages for the extension to work correctly.
 
 ## Roadmap
 
