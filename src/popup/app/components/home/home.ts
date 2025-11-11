@@ -116,9 +116,11 @@ export class Home implements OnInit {
       return null;
     }
 
-    var sorted = items.sort((a, b) => {
-      return new Date(b.start).getTime() - new Date(a.start).getTime();
-    });
+    var sorted = items
+      .filter((entry) => entry.duration > 0)
+      .sort((a, b) => {
+        return new Date(b.start).getTime() - new Date(a.start).getTime();
+      });
 
     const grouped: TimeEntryGroup[] = [];
     sorted.forEach((entry) => {
