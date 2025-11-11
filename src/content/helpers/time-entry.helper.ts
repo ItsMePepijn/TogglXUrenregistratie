@@ -40,17 +40,17 @@ export async function fillTimeEntryGroup(
       return SAVE_ENTRY_RESULTS.INNER_FORM_ELEMENT_NOT_FOUND;
     }
 
-    const resp = await fetch(
+    const pbiResponse = await fetch(
       `${BASE_URL}/Client/ListActive?page=1&SearchTerm=%23${timeEntryGroup.pbi}`,
     );
-    const body = await resp.json();
+    const pbiBody = await pbiResponse.json();
 
-    if (body == null || body.length === 0) {
+    if (pbiBody == null || pbiBody.length === 0) {
       console.error('No results found for PBI: ', timeEntryGroup.pbi);
       return SAVE_ENTRY_RESULTS.NO_PBI_RESULTS_FOUND;
     }
 
-    const firstItemChildren = body[0].children;
+    const firstItemChildren = pbiBody[0].children;
     if (
       firstItemChildren == null ||
       firstItemChildren.length === 0 ||
@@ -80,7 +80,7 @@ export async function fillTimeEntryGroup(
       Duration: timeEntryGroup.time,
     };
 
-    const postResp = await fetch(
+    const selectPbiResponse = await fetch(
       `${BASE_URL}/TimeRegistration/PostProductBacklogItemModel`,
       {
         method: 'POST',
@@ -88,7 +88,7 @@ export async function fillTimeEntryGroup(
       },
     );
 
-    const newFormContent = await postResp.text();
+    const newFormContent = await selectPbiResponse.text();
     createFormDiv.innerHTML = newFormContent;
 
     const saveFormButton = form.querySelector(
