@@ -147,7 +147,9 @@ export class Home implements OnInit {
   private mapItemsToTotalDuration(items: TimeEntry[] | null): number | null {
     return items == null
       ? null
-      : items.reduce((total, entry) => total + entry.duration, 0);
+      : items
+          .filter((entry) => entry.duration > 0)
+          .reduce((total, entry) => total + entry.duration, 0);
   }
 
   protected readonly PrimeIcons = PrimeIcons;
