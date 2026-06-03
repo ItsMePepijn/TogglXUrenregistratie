@@ -38,7 +38,7 @@ Currently the only way of installing the extension is using the unpacked version
 
 ### 0.2.0
 
-- Handle multiple returned pbi's (Instead of just grabbing the first)
+- Handle multiple returned pbi's with the same starting numbers from Urenregistratie (Instead of just grabbing the first)
 - Better handle low toggl rate limits (For example caching)
 
 ### 1.0.0
