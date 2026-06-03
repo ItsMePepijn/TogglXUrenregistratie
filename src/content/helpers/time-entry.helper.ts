@@ -114,19 +114,37 @@ export function getSavedEntriesForDate(date: string): SavedEntry[] | null {
     return null;
   }
 
-  const entryButtons: NodeListOf<HTMLElement> = dayTab.querySelectorAll(
-    '.registration-list-popover',
-  );
+  const entries = dayTab.querySelectorAll('.registration-list-item');
+  if (entries.length === 0) {
+    return [];
+  }
 
-  return Array.from(entryButtons)
-    .map((button) => {
-      const description = button.dataset['content'];
-      const title = button.dataset['originalTitle'];
+  return Array.from(entries)
+    .map((entry) => {
+      const entryButton: HTMLElement | null = entry.querySelector(
+        '.registration-list-popover',
+      );
 
-      return { description, title };
+      if (entryButton == null) {
+        return null;
+      }
+
+      const description = entryButton.dataset['content'];
+      const title = entryButton.dataset['originalTitle'];
+
+      const entryTimeElement = entry.querySelector('.registration-list-time');
+      if (entryTimeElement == null) {
+        return null;
+      }
+
+      return { description, title, duration: entryTimeElement.textContent };
     })
     .filter(
-      (entry) => entry.description != null && entry.title != null,
+      (entry) =>
+        entry != null &&
+        entry.description != null &&
+        entry.title != null &&
+        entry.duration != null,
     ) as SavedEntry[];
 }
 

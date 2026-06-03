@@ -13,11 +13,13 @@ import { SettingsService } from '../../../../services/settings.service';
 import { parseTogglDescriptionSelctorToRegex } from '../../../../helpers/toggl-description-selector-parser.helper';
 import { MessageService, PrimeIcons } from 'primeng/api';
 import { TooltipModule } from 'primeng/tooltip';
+import { getRoundedTimespanSeconds } from '../../../../helpers/timespan.helper';
 
 interface Vm {
   group: TimeEntryGroup | null;
   groupIsValid: boolean;
   isSaved: boolean;
+  roundedDurationDifference: number | null;
 }
 
 @Component({
@@ -42,11 +44,15 @@ export class TimeEntryGroupComponent implements OnInit {
   private readonly _group$ = new BehaviorSubject<TimeEntryGroup | null>(null);
   private readonly _groupIsValid$ = new BehaviorSubject<boolean>(false);
   private readonly _isSaved$ = new BehaviorSubject<boolean>(false);
+  private readonly _roundedDurationDifference$ = new BehaviorSubject<
+    number | null
+  >(null);
 
   protected readonly Vm$: Observable<Vm> = combineLatest({
     group: this._group$,
     groupIsValid: this._groupIsValid$,
     isSaved: this._isSaved$,
+    roundedDurationDifference: this._roundedDurationDifference$,
   });
 
   constructor(
@@ -76,24 +82,38 @@ export class TimeEntryGroupComponent implements OnInit {
                   ),
                 );
 
+          const savedEntry = savedEntries?.find(
+            (entry) =>
+              entry.description === parsedDescription?.description &&
+              entry.pbi === parsedDescription?.pbi,
+          );
+          console.log(savedEntry);
           const isSaved =
             parsedDescription != null &&
             savedEntries != null &&
-            savedEntries.find(
-              (entry) =>
-                entry.description === parsedDescription.description &&
-                entry.pbi === parsedDescription.pbi,
-            ) != null;
+            savedEntry != null;
+
+          const roundedGroupDuration = getRoundedTimespanSeconds(
+            group!.totalDuration,
+            settings!.roundingTime,
+            settings!.roundingDirection,
+          );
+          const roundedDurationDifference =
+            savedEntry == null || savedEntry.duration == null
+              ? null
+              : roundedGroupDuration - savedEntry.duration;
 
           return {
             isValid: parsedDescription != null,
             isSaved,
+            roundedDurationDifference,
           };
         }),
       )
-      .subscribe(({ isValid, isSaved }) => {
+      .subscribe(({ isValid, isSaved, roundedDurationDifference }) => {
         this._groupIsValid$.next(isValid);
         this._isSaved$.next(isSaved);
+        this._roundedDurationDifference$.next(roundedDurationDifference);
       });
   }
 

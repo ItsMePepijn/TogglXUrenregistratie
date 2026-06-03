@@ -24,9 +24,13 @@ p-accordion-header {
 }
 
 .invalid-entry {
-  color: var(--p-amber-400);
+  color: var(--p-red-500);
 }
 
 .saved-entry {
   color: var(--p-green-400);
+}
+
+.duration-difference {
+  color: var(--p-amber-400);
 }

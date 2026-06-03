@@ -17,6 +17,7 @@ import { parseUrenregistratieTitleToPbi } from '../helpers/urenregistratie-title
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SaveEntryResult } from '../../../core/models/save-entry-result.model';
 import { SAVE_ENTRY_RESULTS } from '../../../core/constants/save-entry-results.constant';
+import { parseUrenregistratieDurationToSeconds } from '../helpers/urenregistratie-duration-parser.helper';
 
 @Injectable({
   providedIn: 'root',
@@ -35,12 +36,16 @@ export class ContentService {
         : entries
             .map((entry) => {
               const parsedPbi = parseUrenregistratieTitleToPbi(entry.title);
+              const parsedDuration = parseUrenregistratieDurationToSeconds(
+                entry.duration,
+              );
 
               return parsedPbi == null
                 ? null
                 : {
                     pbi: parsedPbi,
                     description: entry.description,
+                    duration: parsedDuration,
                   };
             })
             .filter((x) => x !== null),

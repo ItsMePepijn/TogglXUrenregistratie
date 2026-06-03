@@ -5,11 +5,26 @@
         <ng-template #toggleicon let-active="active">
           <div class="item-icon">
             @if (vm.isSaved) {
-              <i
-                [class]="PrimeIcons.CHECK_SQUARE + ' saved-entry'"
-                pTooltip="A saved entry has been found matching this pbi and description"
-                tooltipPosition="top"
-              ></i>
+              @if (
+                vm.roundedDurationDifference != null &&
+                vm.roundedDurationDifference > 0
+              ) {
+                <i
+                  [class]="
+                    PrimeIcons.EXCLAMATION_CIRCLE + ' duration-difference'
+                  "
+                  pTooltip="A saved entry has been found but the total duration of this entry differs from the saved entry with {{
+                    vm.roundedDurationDifference | timespan: 'HH:mm'
+                  }} after rounding."
+                  tooltipPosition="top"
+                ></i>
+              } @else {
+                <i
+                  [class]="PrimeIcons.CHECK_SQUARE + ' saved-entry'"
+                  pTooltip="A saved entry has been found matching this pbi, description and duration after rounding."
+                  tooltipPosition="top"
+                ></i>
+              }
             }
             @if (vm.groupIsValid) {
               <p-button
